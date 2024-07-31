@@ -547,6 +547,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 let databaseValue = snapshot?.val();
                 let lat = databaseValue?.lat;
                 let long = databaseValue?.long;
+                
                 let es = filterPrayerNames(databaseValue);
                 let hadeethD = databaseValue.hadeeth.split("-");
                 // console.log(hadeethD.length);
@@ -558,7 +559,92 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
                 displayMonth(lat, long, es);
 
+                // here chnage style to H if needed
+                if (databaseValue.screen == "H" || databaseValue.screen == "h") {
+                    const cssString = `
+                body{
+                    flex-direction: column;
+                    padding: 0;
+                }
+                .menu{
+                    width: 100%;
+                    flex-direction: row;
+                    margin: 0;
+                    box-sizing: border-box;
+                    padding: 0;
+                    align-items: center;
+                    padding: .5em;
+                }
+                .menu > img {
+                    width: 60px;
+                }
+                .menu > img {
+                    transform: none;
+                }
+                .menu > div {
+                    transform: none;
+                }
+                .mainHolder{
+                    flex-direction: column;
+                    font-size: 0.7em;
+                }
+                .mainHolder > div {
+                    writing-mode: initial;
+                    
+                }
+                .fa-mosque{
+                    transform: none;
+                }
+                .timetable{
+                    writing-mode: initial;
+                    font-size: .7em;
+                    margin:0 auto;
+                    width:100%;
+                    max-width:400px;
+                }
+                #adLabel{
+                    writing-mode: initial;
+                    padding: .5em 1em;
+                    font-size:1.2em;
+                }
+                display-time{
+                    font-size:1.2em;
+                }
+                .hadeeth{
+                    writing-mode: initial;
+                    font-size: 1em;
+                    padding-left: 1em;
+                    padding-right: 1em;
+                }
+                .drawer{
+                    writing-mode: initial;
+                }
+                .hadithHolder{
+                    flex-direction: column;
+                    align-items: center;
+                    padding-bottom:2em;
+                }
+                body{
+                    width: 100%;
+                    padding: 0;
+                    overflow: auto;
+                }`;
 
+                // Create a new style element
+                const styleElement = document.createElement('style');
+                styleElement.type = 'text/css';
+
+                // Add the CSS string to the style element
+                if (styleElement.styleSheet) {
+                // This is for IE
+                styleElement.styleSheet.cssText = cssString;
+                } else {
+                styleElement.appendChild(document.createTextNode(cssString));
+                }
+
+                // Append the style element to the head
+                document.head.appendChild(styleElement);    
+                }
 
             }).catch((error) => {
                 console.error("Error getting data:", error);

@@ -18,12 +18,12 @@
             <div class="form-inner">
                 <form action="#" class="info">
                     <div class="field">
-                        البريد الإلكتروني<input type="text" placeholder="Email Address" id="email" disabled>
+                        البريد الإلكتروني<input type="text" placeholder="Email Address" id="email" >
                     </div>
                    
                     <div class="field">
                         كلمة السر
-                        <input type="password" placeholder="Password" id="pass" disabled>
+                        <input type="password" placeholder="Password" id="pass" >
                         <span data-target="pass" class="toggle-password">👁️</span>
                     </div>
                  
@@ -86,7 +86,10 @@
                         <input type="text" placeholder="advertisement" id="advertisement">
 
                     </div>
-
+                    <div class="field">
+                        شكل الشاشة
+                        <input type="text" id="screen" placeholder="write H or V" name="screen" required>
+                    </div>
                     <div class="field btn">
                         <div class="btn-layer"></div>
                         <input type="submit" value="تأكيد" id="infobtn">
@@ -135,6 +138,7 @@
         const ishaD = document.getElementById("isha");
         const hadeeth = document.getElementById("hadeeth");
         const advertisement = document.getElementById("advertisement");
+        const screen = document.getElementById("screen");
 
         function getParameterByName(name, url) {
             if (!url) url = window.location.href;
@@ -155,7 +159,7 @@
         var refRec = ref(db, `users/${parameterValue}`);
         get(refRec).then((snapshot) => {
             let databaseValue = snapshot.val();
-            // console.log(databaseValue);
+            console.log(databaseValue);
 
             email.value = databaseValue.email;
             password.value = databaseValue.password;
@@ -171,7 +175,7 @@
             ishaD.value = databaseValue.isha;
             hadeeth.value = databaseValue.hadeeth;
             advertisement.value = databaseValue.advertisement;
-
+            screen.value = databaseValue.screen
 
 
         }).catch((error) => {
@@ -183,7 +187,7 @@
 
 
 
-        document.getElementById('infobtn').addEventListener('click', function (e) {
+        document.getElementById('infobtn').addEventListener('click', async function (e) {
             e.preventDefault();
 
             // const emailInfo = document.getElementById("email");
@@ -200,8 +204,7 @@
             // const advertisementInfo = document.getElementById("advertisement");
 
             // console.log(databaseValue);
-            set(ref(db, 'users/' + document.getElementById("email").value.split("@")[0].replace(/[.#$\[\]]/g, "")),
-                {
+            const newData = {
                     email: document.getElementById('email').value,
                     password: document.getElementById('pass').value,
                     mobile: document.getElementById('mobile').value,
@@ -216,10 +219,13 @@
                     isha: document.getElementById('isha').value,
                     hadeeth: document.getElementById('hadeeth').value,
                     advertisement: document.getElementById('advertisement').value,
-
+                    screen : document.getElementById('screen').value
                 }
+                console.log(newData);
+            let x = await set(ref(db, 'users/' + document.getElementById("email").value.split("@")[0].replace(/[.#$\[\]]/g, "")),
+                newData
             );
-
+            console.log(x);
             alert("تم تحديث البيانات بنجاح")
             var destination = 'clock.html?parameter=' + encodeURIComponent(`${document.getElementById('email').value.split("@")[0].replace(/[.#$\[\]]/g, "")}`);
             window.location.href = destination;
