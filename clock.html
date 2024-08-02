@@ -549,6 +549,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 let long = databaseValue?.long;
                 
                 let es = filterPrayerNames(databaseValue);
+                console.log(es);
                 let hadeethD = databaseValue.hadeeth.split("-");
                 // console.log(hadeethD.length);
                 showRandomHadeeth(hadeethD, hadeethD.length);
@@ -824,7 +825,6 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                     var pcell = document.createElement('td');
                     var acell = document.createElement('td');
                     var icell = document.createElement('td');
-
                     pcell.innerHTML = items[i];
                     acell.innerHTML = data[i];
                     icell.innerHTML = eTime[i];
