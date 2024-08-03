@@ -757,10 +757,11 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             document.querySelector(".display-time").style.fontSize = "8em"
             document.body.style.justifyContent = "space-evenly"
             document.querySelector(".hadithHolder").style.fontSize = "1.8em"
+            document.querySelector(".hadithHolder").style.flexDirection = "column-reverse"
             document.querySelector(".hadithHolder").style.padding = "0 3em 0 3em"
             document.querySelector(".hadithHolder").style.boxSizing = "border-box"
-            document.querySelector(".mosque-icon").style.fontSize = "3em"
-            document.querySelector(".hijri").style.fontSize = "3em"
+            document.querySelector(".mosque-icon").style.fontSize = "3.5em"
+            document.querySelector(".hijri").style.fontSize = "3.5em"
             document.querySelector(".display-date").style.fontSize = "1.5em"
             var namesRow = document.createElement('tr');
     
@@ -769,7 +770,8 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             // Iterate over the array and create table cells
             reversedItemsArray.reverse().forEach(function(item) {
                 var cell = document.createElement('td');
-                cell.style.paddingLeft = "1em"
+                cell.style.padding = "0 .5em"
+                cell.style.textAlign = "right"
                 cell.innerHTML = item[1]; // Display prayer time names (English)
                 cell.style.width = '10px'; // Optional: adjust width as needed
                 namesRow.appendChild(cell);
@@ -783,10 +785,10 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             var athanRow = document.createElement('tr');
             for (var i in items) {
                 var cell = document.createElement('td');
-                cell.style.paddingRight = "0em"
+                cell.style.padding = "0 .5em"
                 cell.innerHTML = times[i] || '-'; // Fallback to '-' if the property is missing
                 cell.style.width = '10px'; // Optional: adjust width as needed
-                
+                cell.style.textAlign = "right"
                 athanRow.appendChild(cell);
             }
             var athanTitleCell = document.createElement('td');
@@ -800,9 +802,10 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             var iqamaRow = document.createElement('tr');
             for (var i in items) {
                 var cell = document.createElement('td');
-                cell.style.paddingRight = "0em"
+                cell.style.padding = "0 .5em"
                 cell.innerHTML = estTimes[i] || '-'; // Fallback to '-' if the property is missing
                 cell.style.width = '10px'; // Optional: adjust width as needed
+                cell.style.textAlign = "right"
                 iqamaRow.appendChild(cell);
             }
             var iqamaTitleCell = document.createElement('td');
