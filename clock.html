@@ -753,57 +753,67 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         function makeTableForH(times, estTimes, tbody, titles, items) {
             // Create rows for Prayer Time Names
-            tbody.style.fontSize = "1.1em"
+            tbody.style.fontSize = "1.15em"
             document.querySelector(".display-time").style.fontSize = "8em"
             document.body.style.justifyContent = "space-evenly"
-            document.querySelector(".hadithHolder").style.fontSize = "1.5em"
+            document.querySelector(".hadithHolder").style.fontSize = "1.8em"
             document.querySelector(".hadithHolder").style.padding = "0 3em 0 3em"
             document.querySelector(".hadithHolder").style.boxSizing = "border-box"
-    var namesRow = document.createElement('tr');
+            document.querySelector(".mosque-icon").style.fontSize = "3em"
+            document.querySelector(".hijri").style.fontSize = "3em"
+            document.querySelector(".display-date").style.fontSize = "1.5em"
+            var namesRow = document.createElement('tr');
     
-    var reversedItemsArray = Object.entries(items);
+            var reversedItemsArray = Object.entries(items);
 
-        // Iterate over the array and create table cells
-        reversedItemsArray.reverse().forEach(function(item) {
-    var cell = document.createElement('td');
-    cell.innerHTML = item[1]; // Display prayer time names (English)
-    cell.style.width = '10px'; // Optional: adjust width as needed
-    namesRow.appendChild(cell);
-}); 
-    var emptyCell = document.createElement('td'); // Add an empty cell for alignment
-    emptyCell.style.width = '10px'; // Optional: adjust width as needed
-    namesRow.appendChild(emptyCell);
-    tbody.appendChild(namesRow);
-    // Create rows for Athan times
-    var athanRow = document.createElement('tr');
-    for (var i in items) {
-        var cell = document.createElement('td');
-        cell.innerHTML = times[i] || '-'; // Fallback to '-' if the property is missing
-        cell.style.width = '10px'; // Optional: adjust width as needed
-        athanRow.appendChild(cell);
-    }
-    var athanTitleCell = document.createElement('td');
-    athanTitleCell.innerHTML = titles.athan;
-    athanTitleCell.style.width = '10px'; // Optional: adjust width as needed
-    athanRow.appendChild(athanTitleCell);
-    tbody.appendChild(athanRow);
+            // Iterate over the array and create table cells
+            reversedItemsArray.reverse().forEach(function(item) {
+                var cell = document.createElement('td');
+                cell.style.paddingLeft = "1em"
+                cell.innerHTML = item[1]; // Display prayer time names (English)
+                cell.style.width = '10px'; // Optional: adjust width as needed
+                namesRow.appendChild(cell);
+            }); 
 
-    // Create rows for Iqama times
-    var iqamaRow = document.createElement('tr');
-    for (var i in items) {
-        var cell = document.createElement('td');
-        cell.innerHTML = estTimes[i] || '-'; // Fallback to '-' if the property is missing
-        cell.style.width = '10px'; // Optional: adjust width as needed
-        iqamaRow.appendChild(cell);
-    }
-    var iqamaTitleCell = document.createElement('td');
-    iqamaTitleCell.innerHTML = titles.iqama;
-    iqamaTitleCell.style.width = '10px'; // Optional: adjust width as needed
-    iqamaRow.appendChild(iqamaTitleCell);
-    tbody.appendChild(iqamaRow);
+            var emptyCell = document.createElement('td'); // Add an empty cell for alignment
+            emptyCell.style.width = '10px'; // Optional: adjust width as needed
+            namesRow.appendChild(emptyCell);
+            tbody.appendChild(namesRow);
+            // Create rows for Athan times
+            var athanRow = document.createElement('tr');
+            for (var i in items) {
+                var cell = document.createElement('td');
+                cell.style.paddingRight = "0em"
+                cell.innerHTML = times[i] || '-'; // Fallback to '-' if the property is missing
+                cell.style.width = '10px'; // Optional: adjust width as needed
+                
+                athanRow.appendChild(cell);
+            }
+            var athanTitleCell = document.createElement('td');
+            athanTitleCell.innerHTML = titles.athan;
+            athanTitleCell.style.width = '10px'; // Optional: adjust width as needed
+            athanTitleCell.style.paddingLeft = "1.5em"
+            athanRow.appendChild(athanTitleCell);
+            tbody.appendChild(athanRow);
 
-    
-}
+            // Create rows for Iqama times
+            var iqamaRow = document.createElement('tr');
+            for (var i in items) {
+                var cell = document.createElement('td');
+                cell.style.paddingRight = "0em"
+                cell.innerHTML = estTimes[i] || '-'; // Fallback to '-' if the property is missing
+                cell.style.width = '10px'; // Optional: adjust width as needed
+                iqamaRow.appendChild(cell);
+            }
+            var iqamaTitleCell = document.createElement('td');
+            iqamaTitleCell.innerHTML = titles.iqama;
+            iqamaTitleCell.style.width = '10px'; // Optional: adjust width as needed
+            iqamaTitleCell.style.paddingLeft = "1.5em"
+            iqamaRow.appendChild(iqamaTitleCell);
+            tbody.appendChild(iqamaRow);
+
+            
+        }
         
         function prayerSparkle(pTimes, eTimes) {
             // Sample prayer dictionary
