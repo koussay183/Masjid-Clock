@@ -498,7 +498,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
     <!-- <script type="text/javascript" src="js/imagejs.js"></script> -->
     <script type="module">
-
+        
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -517,7 +517,6 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         // get ref to database services
         const db = getDatabase(app);
-
 
         function getParameterByName(name, url) {
             if (!url) url = window.location.href;
@@ -549,7 +548,6 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 let long = databaseValue?.long;
                 
                 let es = filterPrayerNames(databaseValue);
-                console.log(es);
                 let hadeethD = databaseValue.hadeeth.split("-");
                 // console.log(hadeethD.length);
                 showRandomHadeeth(hadeethD, hadeethD.length);
@@ -558,10 +556,10 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 document.getElementById('msqName').innerHTML = databaseValue.msqname || "جامع عقبة بن نافع";
                 document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
 
-                displayMonth(lat, long, es);
+                displayMonth(lat, long, es,databaseValue.screen);
 
                 // here chnage style to H if needed
-                if (databaseValue.screen == "H" || databaseValue.screen == "h") {
+                if (databaseValue.screen == "H" || databaseValue.screen == "h" ) {
                     const cssString = `
                 body{
                     flex-direction: column;
@@ -684,7 +682,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
 
         // display monthly timetable
-        function displayMonth(latitude, longtitude, estaDu) {
+        function displayMonth(latitude, longtitude, estaDu,screenFromDb) {
             var lat = latitude;
             var lng = longtitude;
             var timeZone = '+3';
@@ -695,12 +693,12 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
 
             prayTimes.setMethod(method);
-            makeTable(lat, lng, timeZone, dst, estaDu);
+            makeTable(lat, lng, timeZone, dst, estaDu,screenFromDb);
 
             // setInterval(displayMonth, 60000);
         }
 
-        function makeTable(lat, lng, timeZone, dst, establishDur) {
+        function makeTable(lat, lng, timeZone, dst, establishDur,screenFromDb) {
 
             var establishDurations = establishDur;
             // console.log(establishDur);
@@ -733,9 +731,15 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             var estTimes = filterPrayerNames(establishTimes(times, establishTime, format, establishDurations));
             // console.log(estTimes);
             var tbody = document.createElement('tbody');
-            makeTableRow(true, titles, titles, estTimes, tbody);
-            prayerSparkle(times, estTimes);
-            makeTableRow(false, times, items, estTimes, tbody);
+            
+            if ((screenFromDb === "H" || screenFromDb === "h") && window.innerWidth >= 800) {
+                makeTableForH(times, estTimes, tbody, titles, items);
+            } else {
+                makeTableRow(true, titles, titles, estTimes, tbody);
+                prayerSparkle(times, estTimes);
+                makeTableRow(false, times, items, estTimes, tbody);
+            }
+            
 
 
             // tbody.appendChild(makeTableRow(times, itemsAthan, klass));
@@ -746,6 +750,61 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         }
 
+
+        function makeTableForH(times, estTimes, tbody, titles, items) {
+            // Create rows for Prayer Time Names
+            tbody.style.fontSize = "1.1em"
+            document.querySelector(".display-time").style.fontSize = "8em"
+            document.body.style.justifyContent = "space-evenly"
+            document.querySelector(".hadithHolder").style.fontSize = "1.5em"
+            document.querySelector(".hadithHolder").style.padding = "0 3em 0 3em"
+            document.querySelector(".hadithHolder").style.boxSizing = "border-box"
+    var namesRow = document.createElement('tr');
+    
+    var reversedItemsArray = Object.entries(items);
+
+        // Iterate over the array and create table cells
+        reversedItemsArray.reverse().forEach(function(item) {
+    var cell = document.createElement('td');
+    cell.innerHTML = item[1]; // Display prayer time names (English)
+    cell.style.width = '10px'; // Optional: adjust width as needed
+    namesRow.appendChild(cell);
+}); 
+    var emptyCell = document.createElement('td'); // Add an empty cell for alignment
+    emptyCell.style.width = '10px'; // Optional: adjust width as needed
+    namesRow.appendChild(emptyCell);
+    tbody.appendChild(namesRow);
+    // Create rows for Athan times
+    var athanRow = document.createElement('tr');
+    for (var i in items) {
+        var cell = document.createElement('td');
+        cell.innerHTML = times[i] || '-'; // Fallback to '-' if the property is missing
+        cell.style.width = '10px'; // Optional: adjust width as needed
+        athanRow.appendChild(cell);
+    }
+    var athanTitleCell = document.createElement('td');
+    athanTitleCell.innerHTML = titles.athan;
+    athanTitleCell.style.width = '10px'; // Optional: adjust width as needed
+    athanRow.appendChild(athanTitleCell);
+    tbody.appendChild(athanRow);
+
+    // Create rows for Iqama times
+    var iqamaRow = document.createElement('tr');
+    for (var i in items) {
+        var cell = document.createElement('td');
+        cell.innerHTML = estTimes[i] || '-'; // Fallback to '-' if the property is missing
+        cell.style.width = '10px'; // Optional: adjust width as needed
+        iqamaRow.appendChild(cell);
+    }
+    var iqamaTitleCell = document.createElement('td');
+    iqamaTitleCell.innerHTML = titles.iqama;
+    iqamaTitleCell.style.width = '10px'; // Optional: adjust width as needed
+    iqamaRow.appendChild(iqamaTitleCell);
+    tbody.appendChild(iqamaRow);
+
+    
+}
+        
         function prayerSparkle(pTimes, eTimes) {
             // Sample prayer dictionary
             const timeDiv = document.querySelector(".display-time");
@@ -785,18 +844,25 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         }
 
         function establishTimes(time, est, timeFormat, estDurations) {
+    console.log("Establishing times:", time, estDurations);
 
-            for (var i in time) {
-                var newtime = addMinutes(Number(estDurations[i]), new Date('2022-1-1 ' + time[i]));
-                const hours = newtime.getHours();
-                const minutes = newtime.getMinutes();
+    const validPrayers = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
-                const formattedTime = `${timeFormat == '12hNS' < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
-                est[i] = formattedTime;
-            }
-            return est
+    validPrayers.forEach(prayer => {
+        if (time[prayer]) {
+            let newtime = addMinutes(Number(estDurations[prayer]), new Date('2022-1-1 ' + time[prayer]));
+            const hours = newtime.getHours();
+            const minutes = newtime.getMinutes();
+            const formattedTime = `${timeFormat == '12hNS' ? (hours % 12 || 12) : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+            est[prayer] = formattedTime;
+        } else {
+            console.warn(`Time for ${prayer} is undefined.`);
+            est[prayer] = '-'; // Assign a fallback value
         }
+    });
 
+    return est;
+}
 
         function addMinutes(minutes, date = new Date()) {
             date.setMinutes(date.getMinutes() + minutes)
