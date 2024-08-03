@@ -753,17 +753,18 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         function makeTableForH(times, estTimes, tbody, titles, items) {
             // Create rows for Prayer Time Names
-            tbody.style.fontSize = "1.15em"
+            tbody.style.fontSize = "1.3em"
             document.querySelector(".display-time").style.fontSize = "8em"
             document.body.style.justifyContent = "space-evenly"
             document.querySelector(".hadithHolder").style.fontSize = "1.8em"
             document.querySelector(".hadithHolder").style.flexDirection = "column-reverse"
             document.querySelector(".hadithHolder").style.padding = "0 3em 0 3em"
             document.querySelector(".hadithHolder").style.boxSizing = "border-box"
-            document.querySelector(".mosque-icon").style.fontSize = "3.5em"
-            document.querySelector(".hijri").style.fontSize = "3.5em"
+            document.querySelector(".mosque-icon").style.fontSize = "3em"
+            document.querySelector(".hijri").style.fontSize = "3em"
             document.querySelector(".menu").style.paddingTop = "0em"
-            document.querySelector(".display-date").style.fontSize = "1.5em"
+            document.querySelector(".display-date").style.fontSize = "1.3em"
+            document.getElementById("adLabel").style.fontSize = "1em"
             var namesRow = document.createElement('tr');
     
             var reversedItemsArray = Object.entries(items);
@@ -771,7 +772,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             // Iterate over the array and create table cells
             reversedItemsArray.reverse().forEach(function(item) {
                 var cell = document.createElement('td');
-                cell.style.padding = "0 .5em"
+                cell.style.padding = "0 .6em .3em"
                 cell.style.textAlign = "right"
                 cell.innerHTML = item[1]; // Display prayer time names (English)
                 cell.style.width = '10px'; // Optional: adjust width as needed
@@ -786,7 +787,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             var athanRow = document.createElement('tr');
             for (var i in items) {
                 var cell = document.createElement('td');
-                cell.style.padding = "0 .5em"
+                cell.style.padding = "0 .6em"
                 cell.innerHTML = times[i] || '-'; // Fallback to '-' if the property is missing
                 cell.style.width = '10px'; // Optional: adjust width as needed
                 cell.style.textAlign = "right"
@@ -795,7 +796,8 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             var athanTitleCell = document.createElement('td');
             athanTitleCell.innerHTML = titles.athan;
             athanTitleCell.style.width = '10px'; // Optional: adjust width as needed
-            athanTitleCell.style.paddingLeft = "1.5em"
+            athanTitleCell.style.paddingLeft = "1em"
+            athanTitleCell.style.textAlign = "right"
             athanRow.appendChild(athanTitleCell);
             tbody.appendChild(athanRow);
 
@@ -803,7 +805,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             var iqamaRow = document.createElement('tr');
             for (var i in items) {
                 var cell = document.createElement('td');
-                cell.style.padding = "0 .5em"
+                cell.style.padding = "0 .6em"
                 cell.innerHTML = estTimes[i] || '-'; // Fallback to '-' if the property is missing
                 cell.style.width = '10px'; // Optional: adjust width as needed
                 cell.style.textAlign = "right"
@@ -812,10 +814,10 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             var iqamaTitleCell = document.createElement('td');
             iqamaTitleCell.innerHTML = titles.iqama;
             iqamaTitleCell.style.width = '10px'; // Optional: adjust width as needed
-            iqamaTitleCell.style.paddingLeft = "1.5em"
+            iqamaTitleCell.style.paddingLeft = "1em"
             iqamaRow.appendChild(iqamaTitleCell);
             tbody.appendChild(iqamaRow);
-
+            iqamaTitleCell.style.textAlign = "right"
             
         }
         
