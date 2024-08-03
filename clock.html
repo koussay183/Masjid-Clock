@@ -500,7 +500,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
     <script type="module">
         
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, set, get, child , onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -535,15 +535,34 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         // console.log('Parameter value received: ' + parameterValue);
         var refRec = ref(db, `users/${parameterValue}`);
+
         getData(refRec);
         setInterval(() => {
             getData(refRec);
-        }, 60000);
+        }, 50000);
+        // 
+        let isInitialLoad = true;
+        let debounceTimeout;
 
+        // Listening for value changes
+        onValue(refRec, (snapshot) => {
+            const data = snapshot.val();
+            console.log("Value changed:", data);
 
+            if (!isInitialLoad) {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    location.reload();
+                }, 1000); // Adjust the debounce delay as needed
+            } else {
+                isInitialLoad = false;
+            }
+        });
+        
         function getData(ref) {
             get(ref).then((snapshot) => {
                 let databaseValue = snapshot?.val();
+
                 let lat = databaseValue?.lat;
                 let long = databaseValue?.long;
                 
@@ -753,27 +772,27 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         function makeTableForH(times, estTimes, tbody, titles, items) {
             // Create rows for Prayer Time Names
-            tbody.style.fontSize = "1.3em"
-            document.querySelector(".display-time").style.fontSize = "8em"
-            document.body.style.justifyContent = "space-evenly"
-            document.querySelector(".hadithHolder").style.fontSize = "1.8em"
-            document.querySelector(".hadithHolder").style.flexDirection = "column-reverse"
-            document.querySelector(".hadithHolder").style.padding = "0 3em 0 3em"
-            document.querySelector(".hadithHolder").style.boxSizing = "border-box"
-            document.querySelector(".mosque-icon").style.fontSize = "3em"
-            document.querySelector(".hijri").style.fontSize = "3em"
-            document.querySelector(".menu").style.paddingTop = "0em"
-            document.querySelector(".display-date").style.fontSize = "1.3em"
-            document.getElementById("adLabel").style.fontSize = "1em"
+            tbody.style.fontSize = "1.3em";
+            document.querySelector(".display-time").style.fontSize = "8em";
+            document.body.style.justifyContent = "space-evenly";
+            document.querySelector(".hadithHolder").style.fontSize = "1.8em";
+            document.querySelector(".hadithHolder").style.flexDirection = "column-reverse";
+            document.querySelector(".hadithHolder").style.padding = "0 3em 0 3em";
+            document.querySelector(".hadithHolder").style.boxSizing = "border-box";
+            document.querySelector(".mosque-icon").style.fontSize = "3em";
+            document.querySelector(".hijri").style.fontSize = "3em";
+            document.querySelector(".menu").style.paddingTop = "0em";
+            document.querySelector(".display-date").style.fontSize = "1.3em";
+            document.getElementById("adLabel").style.fontSize = "1em";
+            
             var namesRow = document.createElement('tr');
-    
-            var reversedItemsArray = Object.entries(items);
+            var reversedItemsArray = Object.entries(items).reverse();
 
             // Iterate over the array and create table cells
-            reversedItemsArray.reverse().forEach(function(item) {
+            reversedItemsArray.forEach(function(item) {
                 var cell = document.createElement('td');
-                cell.style.padding = "0 .6em .3em"
-                cell.style.textAlign = "right"
+                cell.style.padding = "0 .6em .3em";
+                cell.style.textAlign = "right";
                 cell.innerHTML = item[1]; // Display prayer time names (English)
                 cell.style.width = '10px'; // Optional: adjust width as needed
                 namesRow.appendChild(cell);
@@ -783,44 +802,46 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             emptyCell.style.width = '10px'; // Optional: adjust width as needed
             namesRow.appendChild(emptyCell);
             tbody.appendChild(namesRow);
+
             // Create rows for Athan times
             var athanRow = document.createElement('tr');
-            for (var i in items) {
+            reversedItemsArray.forEach(function(item) {
                 var cell = document.createElement('td');
-                cell.style.padding = "0 .6em"
-                cell.innerHTML = times[i] || '-'; // Fallback to '-' if the property is missing
+                cell.style.padding = "0 .6em";
+                cell.innerHTML = times[item[0]] || '-'; // Fallback to '-' if the property is missing
                 cell.style.width = '10px'; // Optional: adjust width as needed
-                cell.style.textAlign = "right"
+                cell.style.textAlign = "right";
                 athanRow.appendChild(cell);
-            }
+            });
+
             var athanTitleCell = document.createElement('td');
             athanTitleCell.innerHTML = titles.athan;
             athanTitleCell.style.width = '10px'; // Optional: adjust width as needed
-            athanTitleCell.style.paddingLeft = "1em"
-            athanTitleCell.style.textAlign = "right"
+            athanTitleCell.style.paddingLeft = "1em";
+            athanTitleCell.style.textAlign = "right";
             athanRow.appendChild(athanTitleCell);
             tbody.appendChild(athanRow);
 
             // Create rows for Iqama times
             var iqamaRow = document.createElement('tr');
-            for (var i in items) {
+            reversedItemsArray.forEach(function(item) {
                 var cell = document.createElement('td');
-                cell.style.padding = "0 .6em"
-                cell.innerHTML = estTimes[i] || '-'; // Fallback to '-' if the property is missing
+                cell.style.padding = "0 .6em";
+                cell.innerHTML = estTimes[item[0]] || '-'; // Fallback to '-' if the property is missing
                 cell.style.width = '10px'; // Optional: adjust width as needed
-                cell.style.textAlign = "right"
+                cell.style.textAlign = "right";
                 iqamaRow.appendChild(cell);
-            }
+            });
+
             var iqamaTitleCell = document.createElement('td');
             iqamaTitleCell.innerHTML = titles.iqama;
             iqamaTitleCell.style.width = '10px'; // Optional: adjust width as needed
-            iqamaTitleCell.style.paddingLeft = "1em"
+            iqamaTitleCell.style.paddingLeft = "1em";
+            iqamaTitleCell.style.textAlign = "right";
             iqamaRow.appendChild(iqamaTitleCell);
             tbody.appendChild(iqamaRow);
-            iqamaTitleCell.style.textAlign = "right"
-            
         }
-        
+
         function prayerSparkle(pTimes, eTimes) {
             // Sample prayer dictionary
             const timeDiv = document.querySelector(".display-time");

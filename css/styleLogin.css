@@ -12,6 +12,7 @@ body {
     display: grid;
     height: 100%;
     width: 100%;
+    padding: .4em;
     place-items: center;
     background: -webkit-linear-gradient(left, #003366, #004080, #0059b3, #0073e6);
 }
@@ -24,7 +25,8 @@ body {
 .wrapper {
     overflow: hidden;
     /* max-width: 1590px; */
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     background: #fff;
     padding: 30px;
     border-radius: 15px;
