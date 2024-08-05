@@ -19,6 +19,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             background-repeat: no-repeat;
             background-size: cover;
             background-attachment: fixed;
+            background-position: 50%;
             font-family: 'ArbFONTS-Hacen-Tunisia-Bd';
             font-size: 15px;
             /* margin-right: 20vw; */
@@ -576,7 +577,12 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
 
                 displayMonth(lat, long, es,databaseValue.screen);
-
+                if(databaseValue.backgroundImage !== "noBg"){
+                    document.body.style.backgroundImage = "url('"+databaseValue.backgroundImage+"')";
+                    document.body.style.backgroundSize = "cover";
+                    document.body.style.backgroundRepeat = "no-repeat";
+                    
+                }
                 // here chnage style to H if needed
                 if (databaseValue.screen == "H" || databaseValue.screen == "h" ) {
                     const cssString = `

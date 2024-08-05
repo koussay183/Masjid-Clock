@@ -90,11 +90,19 @@
                         شكل الشاشة
                         <input type="text" id="screen" placeholder="write H or V" name="screen" required>
                     </div>
+                    <div class="field" style="height: auto;text-align: center;font-size: 1.3em;">
+                        صورة الخلفية
+                        <input type="file" id="bgImage" accept="image/*" style="display: none;">
+                        <img id="imagePreview" alt="Current Background Image" style="cursor: pointer;width: 100%;">
+                        <div id="loadingMessage" style="display: none;">تحميل...</div>
+                    </div>
+                    
+                    
                     <div class="field btn">
                         <div class="btn-layer"></div>
                         <input type="submit" value="تأكيد" id="infobtn">
                     </div>
-
+                    
                 </form>
 
             </div>
@@ -104,121 +112,213 @@
 
     
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-        // import { recordRef } from './signupFire.js';
-    
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAoO1sTD7c29cXuf7Ym2EFWFWf4sT-dhGQ",
-            authDomain: "manarahclock.firebaseapp.com",
-            projectId: "manarahclock",
-            storageBucket: "manarahclock.appspot.com",
-            messagingSenderId: "787657770789",
-            appId: "1:787657770789:web:028b6a3eb9cc7a32827ccc"
-        };
-    
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-    
-        // get ref to database services
-        const db = getDatabase(app);
-    
-        const email = document.getElementById("email");
-        const password = document.getElementById("pass");
-        const mobile = document.getElementById("mobile");
-        const msqNameF = document.getElementById("msqName");
-        const lat = document.getElementById("lat");
-        const long = document.getElementById("long");
-        const fajrD = document.getElementById("fajr");
-        const sunriseD = document.getElementById("sunrise");
-        const dhuhrD = document.getElementById("dhuhr");
-        const asrD = document.getElementById("asr");
-        const maghribD = document.getElementById("maghrib");
-        const ishaD = document.getElementById("isha");
-        const hadeeth = document.getElementById("hadeeth");
-        const advertisement = document.getElementById("advertisement");
-        const screen = document.getElementById("screen");
-    
-        function getParameterByName(name, url) {
-            if (!url) url = window.location.href;
-            name = name.replace(/[\[\]]/g, '\\$&');
-            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAoO1sTD7c29cXuf7Ym2EFWFWf4sT-dhGQ",
+    authDomain: "manarahclock.firebaseapp.com",
+    projectId: "manarahclock",
+    storageBucket: "manarahclock.appspot.com",
+    messagingSenderId: "787657770789",
+    appId: "1:787657770789:web:028b6a3eb9cc7a32827ccc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const storage = getStorage(app);
+
+const email = document.getElementById("email");
+const password = document.getElementById("pass");
+const mobile = document.getElementById("mobile");
+const msqNameF = document.getElementById("msqName");
+const lat = document.getElementById("lat");
+const long = document.getElementById("long");
+const fajrD = document.getElementById("fajr");
+const sunriseD = document.getElementById("sunrise");
+const dhuhrD = document.getElementById("dhuhr");
+const asrD = document.getElementById("asr");
+const maghribD = document.getElementById("maghrib");
+const ishaD = document.getElementById("isha");
+const hadeeth = document.getElementById("hadeeth");
+const advertisement = document.getElementById("advertisement");
+const screen = document.getElementById("screen");
+const bgImage = document.getElementById("bgImage");
+const imagePreview = document.getElementById("imagePreview");
+
+let currentImageRef = null;
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+const parameterValue = getParameterByName('parameter');
+
+var refRec = ref(db, `users/${parameterValue}`);
+get(refRec).then((snapshot) => {
+    if (snapshot.exists()) {
+        let databaseValue = snapshot.val();
+        email.value = databaseValue.email;
+        password.value = databaseValue.password;
+        mobile.value = databaseValue.mobile;
+        msqNameF.value = databaseValue.msqname;
+        lat.value = databaseValue.lat;
+        long.value = databaseValue.long;
+        fajrD.value = databaseValue.fajr;
+        sunriseD.value = databaseValue.sunrise;
+        dhuhrD.value = databaseValue.dhuhr;
+        asrD.value = databaseValue.asr;
+        maghribD.value = databaseValue.maghrib;
+        ishaD.value = databaseValue.isha;
+        hadeeth.value = databaseValue.hadeeth;
+        advertisement.value = databaseValue.advertisement;
+        screen.value = databaseValue.screen;
+
+        if (databaseValue.backgroundImage && databaseValue.backgroundImage !== "noBg") {
+            imagePreview.src = databaseValue.backgroundImage;
+            imagePreview.style.display = "block";
+
+            const imageUrl = new URL(databaseValue.backgroundImage);
+            const fullPath = decodeURIComponent(imageUrl.pathname.split("/o/")[1]);
+            currentImageRef = storageRef(storage, fullPath);
+        } else {
+            imagePreview.style.display = "none";
+            bgImage.style.display = "block"; // Make sure the input is visible
         }
-    
-        // Get the parameter value from the URL
-        const parameterValue = getParameterByName('parameter');
-    
-        // Example usage: Display the parameter value in an alert
-        // console.log('Parameter value received: ' + parameterValue);
-        var refRec = ref(db, `users/${parameterValue}`);
-        get(refRec).then((snapshot) => {
-            if (snapshot.exists()) {
-                let databaseValue = snapshot.val();
-                console.log(databaseValue);
-    
-                email.value = databaseValue.email;
-                password.value = databaseValue.password;
-                mobile.value = databaseValue.mobile;
-                msqNameF.value = databaseValue.msqname;
-                lat.value = databaseValue.lat;
-                long.value = databaseValue.long;
-                fajrD.value = databaseValue.fajr;
-                sunriseD.value = databaseValue.sunrise;
-                dhuhrD.value = databaseValue.dhuhr;
-                asrD.value = databaseValue.asr;
-                maghribD.value = databaseValue.maghrib;
-                ishaD.value = databaseValue.isha;
-                hadeeth.value = databaseValue.hadeeth;
-                advertisement.value = databaseValue.advertisement;
-                screen.value = databaseValue.screen;
-            } else {
-                console.error("No data available");
+    } else {
+        console.error("No data available");
+    }
+}).catch((error) => {
+    console.error("Error getting data:", error);
+});
+
+imagePreview.addEventListener('click', () => {
+    bgImage.click();
+});
+
+bgImage.addEventListener('change', async () => {
+    if (bgImage.files.length > 0) {
+        const imageFile = bgImage.files[0];
+        const storageReference = storageRef(storage, 'backgroundImages/' + email.value.split("@")[0].replace(/[.#$\[\]]/g, "") + '/' + imageFile.name);
+
+        try {
+            showLoadingMessage("تحميل...");
+
+            if (currentImageRef) {
+                await deleteObject(currentImageRef);
             }
-        }).catch((error) => {
-            console.error("Error getting data:", error);
-        });
-    
-        document.getElementById('infobtn').addEventListener('click', async function (e) {
-            e.preventDefault();
-    
-            const newData = {
-                email: email.value,
-                password: password.value,
-                mobile: mobile.value,
-                msqname: msqNameF.value,
-                lat: lat.value,
-                long: long.value,
-                fajr: fajrD.value,
-                sunrise: sunriseD.value,
-                dhuhr: dhuhrD.value,
-                asr: asrD.value,
-                maghrib: maghribD.value,
-                isha: ishaD.value,
-                hadeeth: hadeeth.value,
-                advertisement: advertisement.value,
-                screen: screen.value
-            };
-    
-            console.log('Updating data for user:', newData.email.split("@")[0].replace(/[.#$\[\]]/g, ""));
-            console.log('Data:', newData);
-    
-            try {
-                await set(ref(db, 'users/' + newData.email.split("@")[0].replace(/[.#$\[\]]/g, "")), newData);
-                console.log('Data successfully updated');
-                alert("تم تحديث البيانات بنجاح");
-                var destination = 'clock.html?parameter=' + encodeURIComponent(newData.email.split("@")[0].replace(/[.#$\[\]]/g, ""));
-                window.location.href = destination;
-            } catch (error) {
-                console.error('Error updating data:', error);
-            }
-        });
+
+            await uploadBytes(storageReference, imageFile);
+            const imageUrl = await getDownloadURL(storageReference);
+            imagePreview.src = imageUrl;
+            imagePreview.style.display = "block";
+            bgImage.style.display = "none"; // Hide the input after image is uploaded
+            currentImageRef = storageReference;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+        } finally {
+            hideLoadingMessage();
+        }
+    }
+});
+
+document.getElementById('infobtn').addEventListener('click', async function (e) {
+    e.preventDefault();
+
+    const newData = {
+        email: email.value,
+        password: password.value,
+        mobile: mobile.value,
+        msqname: msqNameF.value,
+        lat: lat.value,
+        long: long.value,
+        fajr: fajrD.value,
+        sunrise: sunriseD.value,
+        dhuhr: dhuhrD.value,
+        asr: asrD.value,
+        maghrib: maghribD.value,
+        isha: ishaD.value,
+        hadeeth: hadeeth.value,
+        advertisement: advertisement.value,
+        screen: screen.value,
+        backgroundImage: currentImageRef ? imagePreview.src : "noBg"
+    };
+
+    console.log('Updating data for user:', newData.email.split("@")[0].replace(/[.#$\[\]]/g, ""));
+    console.log('Data:', newData);
+
+    try {
+        showLoadingMessage("تحميل...");
+
+        await set(ref(db, 'users/' + newData.email.split("@")[0].replace(/[.#$\[\]]/g, "")), newData);
+        console.log('Data successfully updated');
+        alert("تم تحديث البيانات بنجاح");
+        var destination = 'clock.html?parameter=' + encodeURIComponent(newData.email.split("@")[0].replace(/[.#$\[\]]/g, ""));
+        window.location.href = destination;
+    } catch (error) {
+        console.error('Error updating data:', error);
+    } finally {
+        hideLoadingMessage();
+    }
+});
+
+function showLoadingMessage(message) {
+    // Create the overlay element
+    const overlay = document.createElement('div');
+    overlay.id = 'loadingOverlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.zIndex = '999';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+
+    // Create the loading message element
+    const loadingMessage = document.createElement('div');
+    loadingMessage.id = 'loadingMessage';
+    loadingMessage.style.padding = '20px';
+    loadingMessage.style.backgroundColor = '#fff';
+    loadingMessage.style.borderRadius = '5px';
+    loadingMessage.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
+    loadingMessage.style.fontSize = '1.5em';
+    loadingMessage.style.color = '#000';
+    loadingMessage.innerText = message;
+
+    overlay.appendChild(loadingMessage);
+    document.body.appendChild(overlay);
+
+    // Disable scrolling
+    document.body.style.overflow = 'hidden';
+}
+
+function hideLoadingMessage() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        document.body.removeChild(overlay);
+    }
+
+    // Re-enable scrolling
+    document.body.style.overflow = '';
+}
+
     </script>
+    
+    
+    
+    
+    
+    
     <script src="js/signinup.js"></script>
     
     <script src="js/signinup.js"></script>
