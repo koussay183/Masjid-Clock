@@ -377,6 +377,20 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             body{
                 flex-direction: column;
                 padding: 0;
+                background-image: url("assets/خلفية\ للساعة\ 88.svg");
+            }
+            .backgroundHolder{
+                object-fit: cover;
+                object-position: center;
+                transform: rotate(90deg);
+                width: 100vh;
+                height: 100vw;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-90deg);
+                /* this to delete the image in the mobile version */
+                display: none;
             }
             .menu{
                 width: 100%;
@@ -423,6 +437,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             }
             .drawer{
                 writing-mode: initial;
+                z-index: 99;
             }
             .hadithHolder{
                 flex-direction: column;
@@ -648,6 +663,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 .drawer{
                     writing-mode: initial;
                 }
+                
                 .hadithHolder{
                     flex-direction: column;
                     align-items: center;
