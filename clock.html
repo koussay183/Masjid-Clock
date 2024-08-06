@@ -400,6 +400,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 padding: 0;
                 align-items: center;
                 padding: .5em;
+
             }
             .menu > img {
                 width: 60px;
@@ -420,6 +421,9 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             }
             .fa-mosque{
                 transform: none;
+            }
+            .mosque-icon , .display-date{
+                margin-left: 0;
             }
             .timetable{
                 writing-mode: initial;
@@ -609,16 +613,22 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                     flex-direction: column;
                     padding: 0;
                 }
-                .menu{
-                    width: 100%;
-                    flex-direction: row;
-                    margin: 0;
-                    box-sizing: border-box;
-                    padding: 0;
-                    align-items: center;
-                    padding: 1em 2em 0 2em;
-                    
+                @media screen and (min-width:420px){
+                    .menu{
+                        width: 100%;
+                        flex-direction: row;
+                        margin: 0;
+                        box-sizing: border-box;
+                        padding: 0;
+                        align-items: center;
+                        padding: 1em 2em 0 2em;
+                        
+                    }
+                    .mainHolder > div {
+                        writing-mode: initial;
+                    }   
                 }
+                
                 .menu > img {
                     width: 60px;
                 }
@@ -632,10 +642,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                     flex-direction: column;
                     font-size: 0.7em;
                 }
-                .mainHolder > div {
-                    writing-mode: initial;
-                    
-                }
+                
                 .fa-mosque{
                     transform: none;
                 }
