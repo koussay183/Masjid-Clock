@@ -638,6 +638,8 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 if(databaseValue.backgroundImage !== "noBg" ){
                     document.getElementById("backgroundHolder").src = databaseValue.backgroundImage
                 }
+                // here when first load i will set the background mobile to the height of the body
+                document.getElementById("backgroundHolderMobile").style.height = document.body.clientHeight+"px"
                 // here chnage style to H if needed
                 if (databaseValue.screen == "H" || databaseValue.screen == "h" ) {
                     const cssString = `
