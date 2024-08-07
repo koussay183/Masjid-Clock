@@ -125,7 +125,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             border-radius: 10px;
             transition: left 0.3s ease;
             overflow-y: auto;
-            writing-mode: tb;
+            writing-mode: tb;z-index: 9;
         }
 
         .drawer button {
@@ -373,11 +373,31 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         .hadithHolder{
             display: flex;width: 100%;margin-right: .5em;justify-content: center;
         }
+        .backgroundHolderMobile{
+            width: 100vw;
+            height: 100%;
+            position:  absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            display: none;
+        }
         @media screen and (max-width:420px){
             body{
                 flex-direction: column;
                 padding: 0;
-                background-image: url("assets/خلفية\ للساعة\ 88.svg");
+                overflow-y: scroll;
+                justify-content: flex-start;
+                height: auto;
+                scrollbar-width: 0px;
+                position: relative;
+                min-height: 100vh;
+            }
+            body::-webkit-scrollbar{
+                display: none;
+            }
+            .backgroundHolderMobile{
+                display: block;
             }
             .backgroundHolder{
                 object-fit: cover;
@@ -400,16 +420,22 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 padding: 0;
                 align-items: center;
                 padding: .5em;
+                margin-bottom: 1em;
 
             }
             .menu > img {
-                width: 49px;
+                width: 40px;
             }
             .menu > img {
                 transform: none;
             }
             .bar1, .bar2, .bar3 {
-                height: 4px;
+                height: 3px;
+                width: 29px;
+                margin: 5px 0;
+            }
+            .timetable td{
+                padding-right: 0;
             }
             .menu > div {
                 transform: none;
@@ -430,7 +456,9 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             }
             .timetable{
                 writing-mode: initial;
-                font-size: .7em;
+                font-size: .6em;
+                padding: 0 1em;
+                margin-bottom: 2em;
             }
             #adLabel{
                 writing-mode: initial;
@@ -439,8 +467,9 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             .hadeeth{
                 writing-mode: initial;
                 font-size: 1em;
-                padding-left: 1em;
-                padding-right: 1em;
+                padding-left: 2em;
+                padding-right: 2em;
+                padding-bottom:2.5em ;
             }
             .drawer{
                 writing-mode: initial;
@@ -453,7 +482,6 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             body{
                 width: 100%;
                 padding: 0;
-                overflow: auto;
             }
         }
     </style>
@@ -463,6 +491,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
     <script type="text/javascript" src="js/PrayerTimesClass-1-0.js"></script>
     <img class="backgroundHolder" id="backgroundHolder"></img>
+    <img class="backgroundHolderMobile" id="backgroundHolderMobile" src="assets/mobile.jpg"></img>
     <div class="menu" onclick="myFunction(this)" style="z-index: 5;">
         <div >
             <div class="bar1"></div>
@@ -629,10 +658,8 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                     }
                     .mainHolder > div {
                         writing-mode: initial;
-                    }   
-                }
-                
-                .menu > img {
+                    }
+                        .menu > img {
                     width: 60px;
                 }
                 .menu > img {
@@ -683,7 +710,10 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                     width: 100%;
                     padding: 0;
                     overflow: auto;
-                }`;
+                }   
+                }
+                
+                `;
 
                 // Create a new style element
                 const styleElement = document.createElement('style');
