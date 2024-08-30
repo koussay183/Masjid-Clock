@@ -570,7 +570,46 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             messagingSenderId: "787657770789",
             appId: "1:787657770789:web:028b6a3eb9cc7a32827ccc"
         };
+        function requestFullscreen() {
+    const element = document.documentElement; // You can use document.body or any specific element
 
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) { // Firefox
+        element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+        element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) { // IE/Edge
+        element.msRequestFullscreen();
+    }
+}
+
+// Function to exit fullscreen
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) { // Firefox
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { // IE/Edge
+        document.msExitFullscreen();
+    }
+}
+
+// Function to toggle fullscreen
+function toggleFullscreen() {
+    if (document.fullscreenElement) {
+        exitFullscreen();
+    } else {
+        requestFullscreen();
+    }
+}
+
+// Event listener to toggle fullscreen on double click
+window.addEventListener('dblclick', () => {
+    toggleFullscreen();
+});
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
 
