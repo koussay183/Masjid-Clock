@@ -1,16 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>إعدادات المسجد</title>
     <link rel="stylesheet" href="./css/styleInfo.css">
     <meta name="color-scheme" content="light only">
-    <!-- <script type="module" src="infoFire.js"></script> -->
+    <style>
+        /* Loading screen styles */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-
 <body>
+    <div id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
     <div class="wrapper">
         <div class="title-text">
             <div class="title info">إعدادات المسجد</div>
@@ -19,311 +46,348 @@
             <div class="form-inner">
                 <form action="#" class="info">
                     <div class="field">
-                        البريد الإلكتروني<input type="text" placeholder="Email Address" id="email" >
+                        البريد الإلكتروني<input type="text" placeholder="Email Address" id="email">
                     </div>
-                   
                     <div class="field">
                         كلمة السر
-                        <input type="password" placeholder="Password" id="pass" >
+                        <input type="password" placeholder="Password" id="pass">
                         <span data-target="pass" class="toggle-password">👁️</span>
                     </div>
-                 
                     <div class="field">
                         رقم الجوال
-                        <input type="text" placeholder="Mobile (05XXXXXXXX)" id="mobile" required>
+                        <input type="text" placeholder="Mobile (05XXXXXXXX)" id="mobile">
                     </div>
                     <div class="field">
                         إسم المسجد
-                        <input type="text" placeholder="Mosque Name" id="msqName" required>
-
+                        <input type="text" placeholder="Mosque Name" id="msqName">
                     </div>
                     <div class="field">
                         خط العرض
-                        <input type="text" placeholder="Latitude" id="lat" required>
-
+                        <input type="text" placeholder="Latitude" id="lat">
                     </div>
                     <div class="field">
                         خط الطول
-                        <input type="text" placeholder="Longtitude" id="long" required>
-
+                        <input type="text" placeholder="Longitude" id="long">
                     </div>
                     <div class="field">
                         فترة الفجر
-                        <input type="number" placeholder="fajr duration" id="fajr" required>
-
+                        <input type="number" placeholder="Fajr duration" id="fajr">
                     </div>
                     <div class="field">
                         فترة الشروق
-                        <input type="number" placeholder="sunrise duration" id="sunrise" required>
-
+                        <input type="number" placeholder="Sunrise duration" id="sunrise">
                     </div>
                     <div class="field">
                         فترة الظهر
-                        <input type="number" placeholder="dhuhr duration" id="dhuhr" required>
-
+                        <input type="number" placeholder="Dhuhr duration" id="dhuhr">
                     </div>
                     <div class="field">
                         فترة العصر
-                        <input type="number" placeholder="asr duration" id="asr" required>
-
+                        <input type="number" placeholder="Asr duration" id="asr">
                     </div>
                     <div class="field">
                         فترة المغرب
-                        <input type="number" placeholder="maghrib duration" id="maghrib" required>
-
+                        <input type="number" placeholder="Maghrib duration" id="maghrib">
                     </div>
                     <div class="field">
                         فترة العشاء
-                        <input type="number" placeholder="isha duration" id="isha" required>
-
+                        <input type="number" placeholder="Isha duration" id="isha">
                     </div>
                     <div class="field">
                         الأحاديث
-                        <input type="text" placeholder="hadeeth" id="hadeeth" required>
-
+                        <input type="text" placeholder="Hadeeth" id="hadeeth">
                     </div>
                     <div class="field">
                         الإعلانات
-                        <input type="text" placeholder="advertisement" id="advertisement">
-
+                        <input type="text" placeholder="Advertisement" id="advertisement">
                     </div>
                     <div class="field">
                         شكل الشاشة
-                        <input type="text" id="screen" placeholder="write H or V" name="screen" required>
+                        <input type="text" id="screen" placeholder="Write H or V" name="screen">
                     </div>
-                    <div class="field" style="height: auto;font-size: 1.3em;">
+                    <div class="field" style="height: auto; font-size: 1.3em;">
                         صورة الخلفية
                         <input type="file" id="bgImage" accept="image/*" style="display: none;">
-                        <img id="imagePreview" alt="Current Background Image" style="cursor: pointer;width: 100%;max-height: 400px;border-radius: 10px;">
+                        <img id="imagePreview" alt="Current Background Image" style="cursor: pointer; width: 100%; max-height: 400px; border-radius: 10px;">
                         <div id="loadingMessage" style="display: none;">تحميل...</div>
                     </div>
-                    
-                    
+                    <div class="field" style="height: auto; font-size: 1.3em;">
+                        الأذان
+                        <input type="file" id="adhanFile" accept="audio/*" style="display: none;">
+                        <audio id="adhanPreview" controls style="display: none; width: 100%;"></audio>
+                        <button type="button" id="deleteAdhanBtn" style="width: 100%;display: block;margin-top: 1em;border: none;border-radius: 8px;padding: .5em;background-color: #ff6a60;font-size: .9em;color: white;cursor: pointer;">حذف الأذان</button>
+                        <div id="loadingAdhanMessage" style="display: none;">تحميل...</div>
+                    </div>
                     <div class="field btn">
                         <div class="btn-layer"></div>
                         <input type="submit" value="تأكيد" id="infobtn">
                     </div>
-                    
                 </form>
-
             </div>
         </div>
     </div>
 
-
-    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoO1sTD7c29cXuf7Ym2EFWFWf4sT-dhGQ",
+            authDomain: "manarahclock.firebaseapp.com",
+            projectId: "manarahclock",
+            storageBucket: "manarahclock.appspot.com",
+            messagingSenderId: "787657770789",
+            appId: "1:787657770789:web:028b6a3eb9cc7a32827ccc"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+        
+        const email = document.getElementById("email");
+        const password = document.getElementById("pass");
+        const mobile = document.getElementById("mobile");
+        const msqNameF = document.getElementById("msqName");
+        const lat = document.getElementById("lat");
+        const long = document.getElementById("long");
+        const fajrD = document.getElementById("fajr");
+        const sunriseD = document.getElementById("sunrise");
+        const dhuhrD = document.getElementById("dhuhr");
+        const asrD = document.getElementById("asr");
+        const maghribD = document.getElementById("maghrib");
+        const ishaD = document.getElementById("isha");
+        const hadeeth = document.getElementById("hadeeth");
+        const advertisement = document.getElementById("advertisement");
+        const screen = document.getElementById("screen");
+        const bgImage = document.getElementById("bgImage");
+        const imagePreview = document.getElementById("imagePreview");
+        const adhanFile = document.getElementById("adhanFile");
+        const adhanPreview = document.getElementById("adhanPreview");
+        const deleteAdhanBtn = document.getElementById("deleteAdhanBtn");
+        const loadingScreen = document.getElementById('loadingScreen');
+        
+        let currentImageRef = null;
+        let currentAdhanRef = null;
+        
+        const parameterValue = getParameterByName('parameter');
+        
+        var refRec = ref(db, `users/${parameterValue}`);
+        get(refRec).then((snapshot) => {
+            if (snapshot.exists()) {
+                let databaseValue = snapshot.val();
+                fillFormFields(databaseValue);
+        
+                if (databaseValue.backgroundImage && databaseValue.backgroundImage !== "noBg") {
+                    setImagePreview(databaseValue.backgroundImage);
+                    const imageUrl = new URL(databaseValue.backgroundImage);
+                    const fullPath = decodeURIComponent(imageUrl.pathname.split("/o/")[1]);
+                    currentImageRef = storageRef(storage, fullPath);
+                } else {
+                    imagePreview.style.display = "none";
+                    bgImage.style.display = "block"; // Make sure the input is visible
+                }
+        
+                if (databaseValue.adhan && databaseValue.adhan !== "noAdhan") {
+                    setAdhanPreview(databaseValue.adhan);
+                } else {
+                    adhanPreview.style.display = "none";
+                    adhanFile.style.display = "block"; // Make sure the input is visible
+                    deleteAdhanBtn.style.display = "none"; // Hide the button initially
+                }
+            } else {
+                console.error("No data available");
+            }
+        }).catch((error) => {
+            console.error("Error getting data:", error);
+        });
+        
+        // here adding eventlisteners on btns forimage upload and adhen upload
+        imagePreview.addEventListener('click', () => {
+            bgImage.click();
+        });
+        
+        bgImage.addEventListener('change', async () => {
+            const file = bgImage.files[0];
+            if (file) {
+                await uploadImage(file);
+            }
+        });
+        
+        adhanFile.addEventListener('change', async () => {
+            const file = adhanFile.files[0];
+            if (file) {
+                await uploadAdhan(file);
+            }
+        });
+        
+        deleteAdhanBtn.addEventListener('click', async () => {
+            await deleteAdhan();
+        });
+        
+        document.getElementById('infobtn').addEventListener('click', async function (e) {
+            e.preventDefault();
+        
+            const newData = {
+                email: email.value,
+                password: password.value,
+                mobile: mobile.value,
+                msqname: msqNameF.value,
+                lat: lat.value,
+                long: long.value,
+                fajr: fajrD.value,
+                sunrise: sunriseD.value,
+                dhuhr: dhuhrD.value,
+                asr: asrD.value,
+                maghrib: maghribD.value,
+                isha: ishaD.value,
+                hadeeth: hadeeth.value,
+                advertisement: advertisement.value,
+                screen: screen.value,
+                backgroundImage: currentImageRef ? imagePreview.src : "noBg",
+                adhan: currentAdhanRef ? adhanPreview.src : "noAdhan"
+            };
+        
+            console.log('Updating data for user:', newData.email.split("@")[0].replace(/[.#$\[\]]/g, ""));
+            console.log('Data:', newData);
+        
+            try {
+                showLoadingMessage("تحميل...");
+        
+                await set(ref(db, `users/${newData.email.split("@")[0].replace(/[.#$\[\]]/g, "")}`), newData);
+                console.log('Data successfully updated');
+                alert("تم تحديث البيانات بنجاح");
+                var destination = 'clock.html?parameter=' + encodeURIComponent(newData.email.split("@")[0].replace(/[.#$\[\]]/g, ""));
+                window.location.href = destination;
+            } catch (error) {
+                console.error('Error updating data:', error);
+            } finally {
+                hideLoadingMessage();
+            }
+        });
+        // here added code for background images uploading
+        async function uploadImage(file) {
+        loadingScreen.style.display = 'flex'; // Show loading screen
 
-const firebaseConfig = {
-    apiKey: "AIzaSyAoO1sTD7c29cXuf7Ym2EFWFWf4sT-dhGQ",
-    authDomain: "manarahclock.firebaseapp.com",
-    projectId: "manarahclock",
-    storageBucket: "manarahclock.appspot.com",
-    messagingSenderId: "787657770789",
-    appId: "1:787657770789:web:028b6a3eb9cc7a32827ccc"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const storage = getStorage(app);
-
-const email = document.getElementById("email");
-const password = document.getElementById("pass");
-const mobile = document.getElementById("mobile");
-const msqNameF = document.getElementById("msqName");
-const lat = document.getElementById("lat");
-const long = document.getElementById("long");
-const fajrD = document.getElementById("fajr");
-const sunriseD = document.getElementById("sunrise");
-const dhuhrD = document.getElementById("dhuhr");
-const asrD = document.getElementById("asr");
-const maghribD = document.getElementById("maghrib");
-const ishaD = document.getElementById("isha");
-const hadeeth = document.getElementById("hadeeth");
-const advertisement = document.getElementById("advertisement");
-const screen = document.getElementById("screen");
-const bgImage = document.getElementById("bgImage");
-const imagePreview = document.getElementById("imagePreview");
-
-let currentImageRef = null;
-
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
-
-const parameterValue = getParameterByName('parameter');
-
-var refRec = ref(db, `users/${parameterValue}`);
-get(refRec).then((snapshot) => {
-    if (snapshot.exists()) {
-        let databaseValue = snapshot.val();
-        email.value = databaseValue.email;
-        password.value = databaseValue.password;
-        mobile.value = databaseValue.mobile;
-        msqNameF.value = databaseValue.msqname;
-        lat.value = databaseValue.lat;
-        long.value = databaseValue.long;
-        fajrD.value = databaseValue.fajr;
-        sunriseD.value = databaseValue.sunrise;
-        dhuhrD.value = databaseValue.dhuhr;
-        asrD.value = databaseValue.asr;
-        maghribD.value = databaseValue.maghrib;
-        ishaD.value = databaseValue.isha;
-        hadeeth.value = databaseValue.hadeeth;
-        advertisement.value = databaseValue.advertisement;
-        screen.value = databaseValue.screen;
-
-        if (databaseValue.backgroundImage && databaseValue.backgroundImage !== "noBg") {
-            imagePreview.src = databaseValue.backgroundImage;
-            imagePreview.style.display = "block";
-
-            const imageUrl = new URL(databaseValue.backgroundImage);
-            const fullPath = decodeURIComponent(imageUrl.pathname.split("/o/")[1]);
-            currentImageRef = storageRef(storage, fullPath);
-        } else {
-            imagePreview.style.display = "none";
-            bgImage.style.display = "block"; // Make sure the input is visible
+        // Delete the previous image if it exists
+        if (currentImageRef) {
+            try {
+                console.log(currentImageRef);
+                await deleteObject(currentImageRef);
+                console.log("Previous image deleted successfully.");
+            } catch (error) {
+                console.error("Error deleting previous image:", error);
+            }
         }
-    } else {
-        console.error("No data available");
-    }
-}).catch((error) => {
-    console.error("Error getting data:", error);
-});
 
-imagePreview.addEventListener('click', () => {
-    bgImage.click();
-});
-
-bgImage.addEventListener('change', async () => {
-    if (bgImage.files.length > 0) {
-        const imageFile = bgImage.files[0];
-        const storageReference = storageRef(storage, 'backgroundImages/' + email.value.split("@")[0].replace(/[.#$\[\]]/g, "") + '/' + imageFile.name);
+        // Upload the new image
+        const newImagePath = 'backgroundImages/' + email.value.split("@")[0].replace(/[.#$\[\]]/g, "") + '/' + file.name;
+        const newImageRef = storageRef(storage, newImagePath);
+        const uploadTask = uploadBytes(newImageRef, file);
 
         try {
-            showLoadingMessage("تحميل...");
+            const snapshot = await uploadTask;
+            const url = await getDownloadURL(snapshot.ref);
 
-            if (currentImageRef) {
-                await deleteObject(currentImageRef);
-            }
+            // Update the Firebase database with the new image URL
+            await set(ref(db, `users/${parameterValue}/backgroundImage`), url);
 
-            await uploadBytes(storageReference, imageFile);
-            const imageUrl = await getDownloadURL(storageReference);
-            imagePreview.src = imageUrl;
-            imagePreview.style.display = "block";
-            bgImage.style.display = "none"; // Hide the input after image is uploaded
-            currentImageRef = storageReference;
+            // Set the new image as the preview and update the current reference
+            setImagePreview(url);
+            currentImageRef = newImageRef; // Update the reference to the new image
         } catch (error) {
-            console.error('Error uploading image:', error);
+            console.error("Error uploading image:", error);
         } finally {
-            hideLoadingMessage();
+            loadingScreen.style.display = 'none'; // Hide loading screen
         }
     }
-});
+        
+        function setImagePreview(url) {
+            imagePreview.src = url;
+            imagePreview.style.display = "block";
+            bgImage.style.display = "none";
+            currentImageRef = storageRef(storage, 'backgroundImages/' + email.value.split("@")[0].replace(/[.#$\[\]]/g, "") + '/' + url.split('/').pop());
+            
+            
+        }
+        
+        // here added code for adhen files
+        async function uploadAdhan(file) {
+            loadingScreen.style.display = 'flex'; // Show loading screen
+            const adhanRef = storageRef(storage, `adhans/${file.name}`);
+            const uploadTask = uploadBytes(adhanRef, file);
+        
+            try {
+                const snapshot = await uploadTask;
+                const url = await getDownloadURL(snapshot.ref);
+                await set(ref(db, `users/${parameterValue}/adhan`), url);
+                setAdhanPreview(url);
+            } catch (error) {
+                console.error("Error uploading Adhan:", error);
+            } finally {
+                loadingScreen.style.display = 'none'; // Hide loading screen
+            }
+        }
+        
+        async function deleteAdhan() {
+            loadingScreen.style.display = 'flex'; // Show loading screen
+            if (currentAdhanRef) {
+                try {
+                    await deleteObject(currentAdhanRef);
+                    await set(ref(db, `users/${parameterValue}/adhan`), "noAdhan");
+                    adhanPreview.style.display = 'none';
+                    adhanFile.style.display = 'block';
+                    deleteAdhanBtn.style.display = 'none';
+                } catch (error) {
+                    console.error("Error deleting Adhan:", error);
+                } finally {
+                    loadingScreen.style.display = 'none'; // Hide loading screen
+                }
+            }
+        }
 
-document.getElementById('infobtn').addEventListener('click', async function (e) {
-    e.preventDefault();
-
-    const newData = {
-        email: email.value,
-        password: password.value,
-        mobile: mobile.value,
-        msqname: msqNameF.value,
-        lat: lat.value,
-        long: long.value,
-        fajr: fajrD.value,
-        sunrise: sunriseD.value,
-        dhuhr: dhuhrD.value,
-        asr: asrD.value,
-        maghrib: maghribD.value,
-        isha: ishaD.value,
-        hadeeth: hadeeth.value,
-        advertisement: advertisement.value,
-        screen: screen.value,
-        backgroundImage: currentImageRef ? imagePreview.src : "noBg"
-    };
-
-    console.log('Updating data for user:', newData.email.split("@")[0].replace(/[.#$\[\]]/g, ""));
-    console.log('Data:', newData);
-
-    try {
-        showLoadingMessage("تحميل...");
-
-        await set(ref(db, 'users/' + newData.email.split("@")[0].replace(/[.#$\[\]]/g, "")), newData);
-        console.log('Data successfully updated');
-        alert("تم تحديث البيانات بنجاح");
-        var destination = 'clock.html?parameter=' + encodeURIComponent(newData.email.split("@")[0].replace(/[.#$\[\]]/g, ""));
-        window.location.href = destination;
-    } catch (error) {
-        console.error('Error updating data:', error);
-    } finally {
-        hideLoadingMessage();
-    }
-});
-
-function showLoadingMessage(message) {
-    // Create the overlay element
-    const overlay = document.createElement('div');
-    overlay.id = 'loadingOverlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    overlay.style.zIndex = '999';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-
-    // Create the loading message element
-    const loadingMessage = document.createElement('div');
-    loadingMessage.id = 'loadingMessage';
-    loadingMessage.style.padding = '20px';
-    loadingMessage.style.backgroundColor = '#fff';
-    loadingMessage.style.borderRadius = '5px';
-    loadingMessage.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.2)';
-    loadingMessage.style.fontSize = '1.5em';
-    loadingMessage.style.color = '#000';
-    loadingMessage.innerText = message;
-
-    overlay.appendChild(loadingMessage);
-    document.body.appendChild(overlay);
-
-    // Disable scrolling
-    document.body.style.overflow = 'hidden';
-}
-
-function hideLoadingMessage() {
-    const overlay = document.getElementById('loadingOverlay');
-    if (overlay) {
-        document.body.removeChild(overlay);
-    }
-
-    // Re-enable scrolling
-    document.body.style.overflow = '';
-}
-
-    </script>
-    
-    
-    
-    
-    
-    
-    <script src="js/signinup.js"></script>
-    
-    <script src="js/signinup.js"></script>
-
+        function setAdhanPreview(url) {
+            adhanPreview.src = url;
+            adhanPreview.style.display = "block";
+            adhanFile.style.display = "none";
+            deleteAdhanBtn.style.display = "block";
+            currentAdhanRef = storageRef(storage, `adhans/${url.split('/').pop()}`);
+        }
+        
+        // here added code for saving data in firebase
+        function fillFormFields(data) {
+            email.value = data.email || '';
+            password.value = data.password || '';
+            mobile.value = data.mobile || '';
+            msqNameF.value = data.msqName || '';
+            lat.value = data.lat || '';
+            long.value = data.long || '';
+            fajrD.value = data.fajr || '';
+            sunriseD.value = data.sunrise || '';
+            dhuhrD.value = data.dhuhr || '';
+            asrD.value = data.asr || '';
+            maghribD.value = data.maghrib || '';
+            ishaD.value = data.isha || '';
+            hadeeth.value = data.hadeeth || '';
+            advertisement.value = data.advertisement || '';
+            screen.value = data.screen || '';
+        }
+        
+        function getParameterByName(name) {
+            const url = new URL(window.location.href);
+            const value = url.searchParams.get(name);
+            return value ? decodeURIComponent(value) : null;
+        }
+        
+        // here added code to show loading messages
+        function showLoadingMessage(message) {
+            loadingScreen.style.display = 'flex';
+            loadingScreen.innerHTML = `<div>${message}</div>`;
+        }
+        
+        function hideLoadingMessage() {
+            loadingScreen.style.display = 'none';
+        }
+        </script>
 </body>
-
 </html>

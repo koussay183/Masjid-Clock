@@ -552,7 +552,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         </div>
     </div>
-
+    <audio id="adhanSound" src="" preload="auto" muted></audio>
     <script type="text/javascript" src="js/prayer.js"></script>
 
     <!-- <script type="text/javascript" src="js/imagejs.js"></script> -->
@@ -594,11 +594,17 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         // console.log('Parameter value received: ' + parameterValue);
         var refRec = ref(db, `users/${parameterValue}`);
+        const adhanAudio = document.getElementById('adhanSound');
 
+        window.addEventListener('click', async () => {
+            // Unmute and play the adhan after user interaction
+            adhanAudio.muted = false;
+        });
+        
         getData(refRec);
-        setInterval(() => {
+        var gettingDataInterval = setInterval(() => {
             getData(refRec);
-        }, 50000);
+        }, 1000);
         // 
         let isInitialLoad = true;
         let debounceTimeout;
@@ -624,7 +630,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
                 let lat = databaseValue?.lat;
                 let long = databaseValue?.long;
-                
+                document.getElementById("adhanSound").src = databaseValue?.adhan
                 let es = filterPrayerNames(databaseValue);
                 let hadeethD = databaseValue.hadeeth.split("-");
                 // console.log(hadeethD.length);
@@ -823,7 +829,16 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 makeTableForH(times, estTimes, tbody, titles, items);
             } else {
                 makeTableRow(true, titles, titles, estTimes, tbody);
-                prayerSparkle(times, estTimes);
+                const timesTest = {
+                    "fajr": "7:46",
+                    "sunrise": "8:57",
+                    "dhuhr": "3:00",
+                    "asr": "00:19",
+                    "maghrib": "9:04",
+                    "isha": "10:34"
+                }
+                
+                prayerSparkle(timesTest, estTimes);
                 makeTableRow(false, times, items, estTimes, tbody);
             }
             
@@ -911,8 +926,9 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         }
 
         function prayerSparkle(pTimes, eTimes) {
-            // Sample prayer dictionary
             const timeDiv = document.querySelector(".display-time");
+            const adhanSound = document.getElementById('adhanSound'); // Reference to the audio element
+
             const prayerTimes = {
                 "fajr": "05:30",
                 "dhuhr": "12:30",
@@ -920,34 +936,33 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 "maghrib": "18:00",
                 "isha": "20:00"
             };
+
             const options = {
                 hour: 'numeric',
                 minute: 'numeric',
-                hour12: true
+                hour12: false
             };
 
-            // Get the current time
             const now = new Date();
-            const currentTime = now.toLocaleString('en-US', options).replace(' PM', '');
-
-            // Check if the current time matches any prayer time
+            const currentTime = now.toLocaleString('en-US', options);
+            
             for (const prayer in pTimes) {
                 if (prayerTimes.hasOwnProperty(prayer)) {
-                    if (pTimes[prayer] === currentTime || eTimes[prayer] === currentTime) {
-
-                        timeDiv.classList.add('sparkle');
-                        setTimeout(() => {
-                            timeDiv.classList.remove('sparkle');
-                        }, 10000);
-
-                        // Do something here, like trigger an action or print a message
+                    console.log(pTimes[prayer] ,pTimes[prayer] === currentTime , currentTime,"azeazeazeaze");
+                    
+                    if (pTimes[prayer] === currentTime ) {
+                        adhanSound.play(); // Play the adhan sound
+                        clearInterval(gettingDataInterval)
+                        adhanSound.addEventListener("ended",()=>{
+                            gettingDataInterval = setInterval(() => {
+                                getData(refRec);
+                            }, 1000);
+                        })
                         break;
                     }
                 }
             }
-
         }
-
         function establishTimes(time, est, timeFormat, estDurations) {
     console.log("Establishing times:", time, estDurations);
 
