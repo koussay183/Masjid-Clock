@@ -174,10 +174,10 @@
         
         var refRec = ref(db, `users/${parameterValue}`);
         
-        console.log(parameterValue);
+        
         
         get(refRec).then((snapshot) => {
-            console.log(snapshot.val());
+            
             
             if (snapshot.exists()) {
                 let databaseValue = snapshot.val();
@@ -193,8 +193,13 @@
                     bgImage.style.display = "block"; // Make sure the input is visible
                 }
         
+                // Assuming databaseValue.adhan is the URL string
                 if (databaseValue.adhan && databaseValue.adhan !== "noAdhan") {
                     setAdhanPreview(databaseValue.adhan);
+                    
+                    const imageUrl = new URL(databaseValue.adhan);
+                    const fullPath = decodeURIComponent(imageUrl.pathname.split("/o/")[1]); // Decode path
+                    currentAdhanRef = storageRef(storage, fullPath); // Correct storage reference
                 } else {
                     adhanPreview.style.display = "none";
                     adhanFile.style.display = "block"; // Make sure the input is visible
@@ -202,6 +207,11 @@
                 }
             } else {
                 console.error("No data available");
+                
+                document.getElementById("adhanFile").style.display = "block"
+                document.getElementById("deleteAdhanBtn").style.display = "none"
+                document.getElementById("bgImage").style.display = "block"
+                document.getElementById("imagePreview").style.display = "none"
             }
         }).catch((error) => {
             console.error("Error getting data:", error);
@@ -335,21 +345,31 @@
         }
         
         async function deleteAdhan() {
-            loadingScreen.style.display = 'flex'; // Show loading screen
-            if (currentAdhanRef) {
-                try {
-                    await deleteObject(currentAdhanRef);
-                    await set(ref(db, `users/${parameterValue}/adhan`), "noAdhan");
-                    adhanPreview.style.display = 'none';
-                    adhanFile.style.display = 'block';
-                    deleteAdhanBtn.style.display = 'none';
-                } catch (error) {
-                    console.error("Error deleting Adhan:", error);
-                } finally {
-                    loadingScreen.style.display = 'none'; // Hide loading screen
-                }
-            }
+    loadingScreen.style.display = 'flex'; // Show loading screen
+    if (currentAdhanRef) {
+        try {
+            // Ensure the currentAdhanRef points to the correct storage path
+            const path = currentAdhanRef.fullPath || currentAdhanRef._location.path_;
+            console.log("Deleting from path:", path); // Debugging
+            
+            // Deleting the object from Firebase Storage
+            await deleteObject(currentAdhanRef);
+            
+            // Update the adhan field in Realtime Database
+            await set(ref(db, `users/${parameterValue}/adhan`), "noAdhan");
+
+            // Update the UI after deletion
+            adhanPreview.style.display = 'none';
+            adhanFile.style.display = 'block';
+            deleteAdhanBtn.style.display = 'none';
+        } catch (error) {
+            console.error("Error deleting Adhan:", error);
+        } finally {
+            loadingScreen.style.display = 'none'; // Hide loading screen
         }
+    }
+}
+
 
         function setAdhanPreview(url) {
             adhanPreview.src = url;
