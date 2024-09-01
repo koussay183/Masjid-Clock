@@ -173,7 +173,12 @@
         const parameterValue = getParameterByName('parameter');
         
         var refRec = ref(db, `users/${parameterValue}`);
+        
+        console.log(parameterValue);
+        
         get(refRec).then((snapshot) => {
+            console.log(snapshot.val());
+            
             if (snapshot.exists()) {
                 let databaseValue = snapshot.val();
                 fillFormFields(databaseValue);
