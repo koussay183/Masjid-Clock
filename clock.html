@@ -868,16 +868,9 @@ window.addEventListener('dblclick', () => {
                 makeTableForH(times, estTimes, tbody, titles, items);
             } else {
                 makeTableRow(true, titles, titles, estTimes, tbody);
-                const timesTest = {
-                    "fajr": "7:46",
-                    "sunrise": "8:57",
-                    "dhuhr": "3:00",
-                    "asr": "00:19",
-                    "maghrib": "9:04",
-                    "isha": "10:34"
-                }
                 
-                prayerSparkle(timesTest, estTimes);
+                
+                prayerSparkle(times, estTimes);
                 makeTableRow(false, times, items, estTimes, tbody);
             }
             
