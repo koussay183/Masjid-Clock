@@ -972,7 +972,7 @@ window.addEventListener('dblclick', () => {
             const options = {
                 hour: 'numeric',
                 minute: 'numeric',
-                hour12: false
+                hour12: true
             };
 
             const now = new Date();
@@ -980,9 +980,9 @@ window.addEventListener('dblclick', () => {
             
             for (const prayer in pTimes) {
                 if (prayerTimes.hasOwnProperty(prayer)) {
-                    console.log(pTimes[prayer] ,pTimes[prayer] === currentTime , currentTime,"azeazeazeaze");
+                    // console.log(pTimes[prayer] ,pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') , currentTime.replace("PM",'').replace("AM",'').replace(" ",''),"checking");
                     
-                    if (pTimes[prayer] === currentTime ) {
+                    if (pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') ) {
                         adhanSound.play(); // Play the adhan sound
                         clearInterval(gettingDataInterval)
                         adhanSound.addEventListener("ended",()=>{
