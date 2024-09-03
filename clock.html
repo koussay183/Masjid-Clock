@@ -115,8 +115,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         }
 
         .drawer {
-            height: 10%;
-            width: 100px;
+           
             position: fixed;
             top: 0;
             left: -150px;
@@ -299,18 +298,14 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
         /* Basic button styles */
         #signout {
-            padding: 10px 20px;
-            /* Padding inside the button */
+            padding: .5em;
             background-color: #f44336;
-            /* Red background color */
             color: white;
-            /* White text color */
             border: none;
-            /* No border */
+            height: 87px;
             cursor: pointer;
-            /* Cursor style on hover */
             font-size: 16px;
-            /* Font size */
+            border-radius: 5px;
         }
 
         /* Hover effect */
@@ -484,6 +479,17 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 padding: 0;
             }
         }
+        #activateSound{
+            border: none;
+            text-align: center;
+            background-color: #f44336;
+            margin-right: .5em;
+            padding: .5em;
+            color: white;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -546,11 +552,12 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
     <div id="myDrawer" class="drawer">
         <!-- <button onclick="closeDrawer()">Close Drawer</button> -->
         <!-- Drawer content goes here -->
-        <div class="header" id="drawerContent">
+        
 
             <button id="signout" onclick="signoutClick()">خروج</button>
 
-        </div>
+        
+        <button id="activateSound">تفعيل الصوت</button>
     </div>
     <audio id="adhanSound" src="" preload="auto" muted></audio>
     <script type="text/javascript" src="js/prayer.js"></script>
@@ -571,45 +578,49 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             appId: "1:787657770789:web:028b6a3eb9cc7a32827ccc"
         };
         function requestFullscreen() {
-    const element = document.documentElement; // You can use document.body or any specific element
+        const element = document.documentElement; // You can use document.body or any specific element
 
-    if (element.requestFullscreen) {
-        element.requestFullscreen();
-    } else if (element.mozRequestFullScreen) { // Firefox
-        element.mozRequestFullScreen();
-    } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
-        element.webkitRequestFullscreen();
-    } else if (element.msRequestFullscreen) { // IE/Edge
-        element.msRequestFullscreen();
-    }
-}
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) { // Firefox
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+            element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) { // IE/Edge
+            element.msRequestFullscreen();
+        }
+        }
+        // activate sound btn
+        document.getElementById('activateSound').addEventListener('click', (event) => {
+            event.target.style.backgroundColor = 'green';
+            event.target.innerText = "تم تفعيل الصوت"
+        });
+        // Function to exit fullscreen
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { // Firefox
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { // IE/Edge
+                document.msExitFullscreen();
+            }
+        }
+        
+        // Function to toggle fullscreen
+        function toggleFullscreen() {
+            if (document.fullscreenElement) {
+                exitFullscreen();
+            } else {
+                requestFullscreen();
+            }
+        }
 
-// Function to exit fullscreen
-function exitFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.mozCancelFullScreen) { // Firefox
-        document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
-        document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) { // IE/Edge
-        document.msExitFullscreen();
-    }
-}
-
-// Function to toggle fullscreen
-function toggleFullscreen() {
-    if (document.fullscreenElement) {
-        exitFullscreen();
-    } else {
-        requestFullscreen();
-    }
-}
-
-// Event listener to toggle fullscreen on double click
-window.addEventListener('dblclick', () => {
-    toggleFullscreen();
-});
+        // Event listener to toggle fullscreen on double click
+        window.addEventListener('dblclick', () => {
+            toggleFullscreen();
+        });
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
 
@@ -629,9 +640,6 @@ window.addEventListener('dblclick', () => {
         // Get the parameter value from the URL
         const parameterValue = getParameterByName('parameter');
 
-        // Example usage: Display the parameter value in an alert
-
-        // console.log('Parameter value received: ' + parameterValue);
         var refRec = ref(db, `users/${parameterValue}`);
         const adhanAudio = document.getElementById('adhanSound');
 
@@ -640,11 +648,18 @@ window.addEventListener('dblclick', () => {
             adhanAudio.muted = false;
         });
         
+        var gettingDataInterval;
+
         getData(refRec);
-        var gettingDataInterval = setInterval(() => {
-            getData(refRec);
-        }, 1000);
-        // 
+        
+            
+        gettingDataInterval = setInterval(()=>{
+            console.log("from interval initial")
+            getData(refRec)
+        }, 5000);
+        
+         
+
         let isInitialLoad = true;
         let debounceTimeout;
 
@@ -657,7 +672,7 @@ window.addEventListener('dblclick', () => {
                 clearTimeout(debounceTimeout);
                 debounceTimeout = setTimeout(() => {
                     location.reload();
-                }, 1000); // Adjust the debounce delay as needed
+                }, 5000); // Adjust the debounce delay as needed
             } else {
                 isInitialLoad = false;
             }
@@ -669,10 +684,14 @@ window.addEventListener('dblclick', () => {
 
                 let lat = databaseValue?.lat;
                 let long = databaseValue?.long;
+
                 document.getElementById("adhanSound").src = databaseValue?.adhan
+
                 let es = filterPrayerNames(databaseValue);
                 let hadeethD = databaseValue.hadeeth.split("-");
                 // console.log(hadeethD.length);
+                
+                
                 showRandomHadeeth(hadeethD, hadeethD.length);
                 // console.log(es);
 
@@ -866,9 +885,9 @@ window.addEventListener('dblclick', () => {
             
             if ((screenFromDb === "H" || screenFromDb === "h") && window.innerWidth >= 800) {
                 makeTableForH(times, estTimes, tbody, titles, items);
+                prayerSparkle(times, estTimes);
             } else {
                 makeTableRow(true, titles, titles, estTimes, tbody);
-                
                 
                 prayerSparkle(times, estTimes);
                 makeTableRow(false, times, items, estTimes, tbody);
@@ -883,7 +902,6 @@ window.addEventListener('dblclick', () => {
             $('timetable').appendChild(tbody);
 
         }
-
 
         function makeTableForH(times, estTimes, tbody, titles, items) {
             // Create rows for Prayer Time Names
@@ -980,41 +998,47 @@ window.addEventListener('dblclick', () => {
             
             for (const prayer in pTimes) {
                 if (prayerTimes.hasOwnProperty(prayer)) {
-                    // console.log(pTimes[prayer] ,pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') , currentTime.replace("PM",'').replace("AM",'').replace(" ",''),"checking");
+                    
+                    console.log(pTimes[prayer] ,pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') , currentTime.replace("PM",'').replace("AM",'').replace(" ",''),"checking");
                     
                     if (pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') ) {
                         adhanSound.play(); // Play the adhan sound
                         clearInterval(gettingDataInterval)
-                        adhanSound.addEventListener("ended",()=>{
+                        const endedListener = () => {
                             gettingDataInterval = setInterval(() => {
+                                console.log("from interval second");
                                 getData(refRec);
-                            }, 1000);
-                        })
+                            }, 5000);
+                            adhanSound.removeEventListener("ended", endedListener); // Remove listener after execution
+                            
+                        };
+                        adhanSound.addEventListener("ended",endedListener)
                         break;
                     }
                 }
             }
         }
+        
         function establishTimes(time, est, timeFormat, estDurations) {
     
 
-    const validPrayers = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            const validPrayers = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
-    validPrayers.forEach(prayer => {
-        if (time[prayer]) {
-            let newtime = addMinutes(Number(estDurations[prayer]), new Date('2022-1-1 ' + time[prayer]));
-            const hours = newtime.getHours();
-            const minutes = newtime.getMinutes();
-            const formattedTime = `${timeFormat == '12hNS' ? (hours % 12 || 12) : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
-            est[prayer] = formattedTime;
-        } else {
-            console.warn(`Time for ${prayer} is undefined.`);
-            est[prayer] = '-'; // Assign a fallback value
+            validPrayers.forEach(prayer => {
+                if (time[prayer]) {
+                    let newtime = addMinutes(Number(estDurations[prayer]), new Date('2022-1-1 ' + time[prayer]));
+                    const hours = newtime.getHours();
+                    const minutes = newtime.getMinutes();
+                    const formattedTime = `${timeFormat == '12hNS' ? (hours % 12 || 12) : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+                    est[prayer] = formattedTime;
+                } else {
+                    console.warn(`Time for ${prayer} is undefined.`);
+                    est[prayer] = '-'; // Assign a fallback value
+                }
+            });
+
+            return est;
         }
-    });
-
-    return est;
-}
 
         function addMinutes(minutes, date = new Date()) {
             date.setMinutes(date.getMinutes() + minutes)
@@ -1061,8 +1085,6 @@ window.addEventListener('dblclick', () => {
             }
             // row.className = klass;
         }
-
-
         // remove all children of a node
         function removeAllChild(node) {
             if (node == undefined || node == null)
