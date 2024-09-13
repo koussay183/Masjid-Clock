@@ -27,9 +27,10 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', function (event) {
   const requestUrl = new URL(event.request.url);
+  const isFirebaseRequest = requestUrl.origin === 'https://manarahclock-default-rtdb.firebaseio.com';
 
-  // Handle Firebase dynamic data
-  if (requestUrl.origin === 'https://manarahclock-default-rtdb.firebaseio.com') {
+  if (navigator.onLine) {
+    // When online, fetch from network and update cache
     event.respondWith(
       fetch(event.request)
         .then(function (networkResponse) {
@@ -37,10 +38,8 @@ self.addEventListener('fetch', function (event) {
             return networkResponse;
           }
 
-          // Clone the response to cache it
           const responseToCache = networkResponse.clone();
-          
-          // Store Firebase response in cache
+
           caches.open(CACHE_NAME).then(function (cache) {
             cache.put(event.request, responseToCache);
           });
@@ -48,30 +47,28 @@ self.addEventListener('fetch', function (event) {
           return networkResponse;
         })
         .catch(function () {
-          // If fetch fails (e.g., offline), try to return the cached response
-          return caches.match(event.request).then(function (cachedResponse) {
-            return cachedResponse || new Response('Offline content unavailable for Firebase');
-          });
+          return new Response('Network request failed');
         })
     );
   } else {
-    // Handle other requests
-    event.respondWith(
-      caches.match(event.request).then(function (cachedResponse) {
-        return cachedResponse || fetch(event.request).then(function (networkResponse) {
-          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-            return networkResponse;
-          }
-
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(function (cache) {
-            cache.put(event.request, responseToCache);
-          });
-
-          return networkResponse;
-        });
-      })
-    );
+    // When offline, use cache if available
+    if (isFirebaseRequest) {
+      // Handle Firebase requests specially
+      event.respondWith(
+        caches.match(event.request)
+          .then(function (cachedResponse) {
+            return cachedResponse || new Response('Offline content unavailable for Firebase');
+          })
+      );
+    } else {
+      // Handle other requests
+      event.respondWith(
+        caches.match(event.request)
+          .then(function (cachedResponse) {
+            return cachedResponse || new Response('Offline content unavailable');
+          })
+      );
+    }
   }
 });
 

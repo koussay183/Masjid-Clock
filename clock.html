@@ -559,7 +559,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         
         <button id="activateSound">تفعيل الصوت</button>
     </div>
-    <audio id="adhanSound" src="" preload="auto" muted></audio>
+    <audio id="adhanSound" src="assets/adhen.mp3" preload="auto" muted ></audio>
     <script type="text/javascript" src="js/prayer.js"></script>
 
     <!-- <script type="text/javascript" src="js/imagejs.js"></script> -->
@@ -634,6 +634,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         document.getElementById('activateSound').addEventListener('click', (event) => {
             event.target.style.backgroundColor = 'green';
             event.target.innerText = "تم تفعيل الصوت"
+            
         });
         
         // Function to exit fullscreen
@@ -658,9 +659,11 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             }
         }
 
+        
         // Event listener to toggle fullscreen on double click
         window.addEventListener('dblclick', () => {
             toggleFullscreen();
+            
         });
        
         // Initialize Firebase
@@ -842,15 +845,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             let lat = databaseValue?.lat;
             let long = databaseValue?.long;
 
-            let adhanUrl = databaseValue?.adhan;
-
-            if (adhanUrl) {
-                cacheAdhanSound(adhanUrl).then(() => {
-                    setCachedAdhanSound(adhanUrl);
-                });
-            } else {
-                setCachedAdhanSound('adhan.mp3'); // Use a default cached file if the URL is missing
-            }
+            
 
             let es = filterPrayerNames(databaseValue);
             let hadeethD = databaseValue.hadeeth.split("-");
@@ -861,6 +856,17 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
 
             displayMonth(lat, long, es, databaseValue.screen);
+
+            let adhanUrl = databaseValue?.adhan;
+
+            if (adhanUrl) {
+                cacheAdhanSound(adhanUrl).then(() => {
+                    setCachedAdhanSound(adhanUrl);
+                
+                });
+            } else {
+                setCachedAdhanSound('adhan.mp3'); // Use a default cached file if the URL is missing
+            }
 
             let backgroundImageUrl = databaseValue.backgroundImage;
             if (backgroundImageUrl !== "noBg") {
@@ -1049,9 +1055,611 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                     "fajr": "4:15",
                     "sunrise": "5:35",
                     "dhuhr": "1:27",
-                    "asr": "3:21",
+                    "asr": "3:34",
                     "maghrib": "1:30",
-                    "isha": "1:36"
+                    "isha": "2:22"
+                }
+                
+                prayerSparkle(testTimes, estTimes);
+                makeTableRow(false, times, items, estTimes, tbody);
+            }
+            
+
+
+            // tbody.appendChild(makeTableRow(times, itemsAthan, klass));
+            // tbody.appendChild(makeTableRow(estTimes, itemsIqama, klass));
+
+            removeAllChild($('timetable'));
+            $('timetable').appendChild(tbody);
+
+        }
+
+        function makeTableForH(times, estTimes, tbody, titles, items) {
+            // Create rows for Prayer Time Names
+            tbody.style.fontSize = "1.3em";
+            document.querySelector(".display-time").style.fontSize = "8em";
+            document.body.style.justifyContent = "space-evenly";
+            document.querySelector(".hadithHolder").style.fontSize = "1.8em";
+            document.querySelector(".hadithHolder").style.flexDirection = "column-reverse";
+            document.querySelector(".hadithHolder").style.padding = "0 3em 0 3em";
+            document.querySelector(".hadithHolder").style.boxSizing = "border-box";
+            document.querySelector(".mosque-icon").style.fontSize = "3em";
+            document.querySelector(".hijri").style.fontSize = "3em";
+            document.querySelector(".menu").style.paddingTop = "0em";
+            document.querySelector(".display-date").style.fontSize = "1.3em";
+            document.getElementById("adLabel").style.fontSize = "1em";
+            
+            var namesRow = document.createElement('tr');
+            var reversedItemsArray = Object.entries(items).reverse();
+
+            // Iterate over the array and create table cells
+            reversedItemsArray.forEach(function(item) {
+                var cell = document.createElement('td');
+                cell.style.padding = "0 .6em .3em";
+                cell.style.textAlign = "right";
+                cell.innerHTML = item[1]; // Display prayer time names (English)
+                cell.style.width = '10px'; // Optional: adjust width as needed
+                namesRow.appendChild(cell);
+            }); 
+
+            var emptyCell = document.createElement('td'); // Add an empty cell for alignment
+            emptyCell.style.width = '10px'; // Optional: adjust width as needed
+            namesRow.appendChild(emptyCell);
+            tbody.appendChild(namesRow);
+
+            // Create rows for Athan times
+            var athanRow = document.createElement('tr');
+            reversedItemsArray.forEach(function(item) {
+                var cell = document.createElement('td');
+                cell.style.padding = "0 .6em";
+                cell.innerHTML = times[item[0]] || '-'; // Fallback to '-' if the property is missing
+                cell.style.width = '10px'; // Optional: adjust width as needed
+                cell.style.textAlign = "right";
+                athanRow.appendChild(cell);
+            });
+
+            var athanTitleCell = document.createElement('td');
+            athanTitleCell.innerHTML = titles.athan;
+            athanTitleCell.style.width = '10px'; // Optional: adjust width as needed
+            athanTitleCell.style.paddingLeft = "1em";
+            athanTitleCell.style.textAlign = "right";
+            athanRow.appendChild(athanTitleCell);
+            tbody.appendChild(athanRow);
+
+            // Create rows for Iqama times
+            var iqamaRow = document.createElement('tr');
+            reversedItemsArray.forEach(function(item) {
+                var cell = document.createElement('td');
+                cell.style.padding = "0 .6em";
+                cell.innerHTML = estTimes[item[0]] || '-'; // Fallback to '-' if the property is missing
+                cell.style.width = '10px'; // Optional: adjust width as needed
+                cell.style.textAlign = "right";
+                iqamaRow.appendChild(cell);
+            });
+
+            var iqamaTitleCell = document.createElement('td');
+            iqamaTitleCell.innerHTML = titles.iqama;
+            iqamaTitleCell.style.width = '10px'; // Optional: adjust width as needed
+            iqamaTitleCell.style.paddingLeft = "1em";
+            iqamaTitleCell.style.textAlign = "right";
+            iqamaRow.appendChild(iqamaTitleCell);
+            tbody.appendChild(iqamaRow);
+        }
+
+        function prayerSparkle(pTimes, eTimes) {
+            const timeDiv = document.querySelector(".display-time");
+            const adhanSound = document.getElementById('adhanSound'); // Reference to the audio element
+
+            const prayerTimes = {
+                "fajr": "05:30",
+                "dhuhr": "12:30",
+                "asr": "15:45",
+                "maghrib": "18:00",
+                "isha": "20:00"
+            };
+
+            const options = {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            };
+
+            const now = new Date();
+            const currentTime = now.toLocaleString('en-US', options);
+            
+            for (const prayer in pTimes) {
+                
+                if (prayerTimes.hasOwnProperty(prayer)) {
+                    
+                    console.log(pTimes[prayer] ,pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') , currentTime.replace("PM",'').replace("AM",'').replace(" ",''),"checking");
+                    
+                    if (pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') ) {
+                        // Clear any existing interval
+                        clearInterval(gettingDataInterval);
+
+                        // Define a callback to play the audio
+                        const playAudio = () => {
+                            // Set the audio source and play
+
+                            // Play the audio and handle errors
+                            adhanSound.play().then(() => {
+                                console.log("Audio is playing");
+                            }).catch((error) => {
+                                console.error("Audio play failed:", error);
+                            });
+                        };
+
+                        // Define the `ended` event listener to restart the interval
+                        const endedListener = () => {
+                            console.log("Audio ended, restarting interval");
+
+                            // Clear the previous interval if it exists
+                            clearInterval(gettingDataInterval);
+
+                            // Restart the interval
+                            gettingDataInterval = setInterval(() => {
+                                console.log("from interval second");
+                                getData(refRec);
+                            }, 5000);
+
+                            // Remove the `ended` listener after execution to avoid duplicate calls
+                            adhanSound.removeEventListener("ended", endedListener);
+                        };
+
+                        // Ensure to clear any existing `ended` event listeners before adding a new one
+                        adhanSound.removeEventListener("ended", endedListener);
+                        adhanSound.addEventListener("ended", endedListener);
+
+                        // Delay playing the audio to avoid immediate interruption
+                        setTimeout(() => {
+                            playAudio();
+                        }, 100); // Adjust the delay if needed
+
+                        break;
+                    }
+                }
+            }
+        }
+        
+        function establishTimes(time, est, timeFormat, estDurations) {
+    
+
+            const validPrayers = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
+            validPrayers.forEach(prayer => {
+                if (time[prayer]) {
+                    let newtime = addMinutes(Number(estDurations[prayer]), new Date('2022-1-1 ' + time[prayer]));
+                    const hours = newtime.getHours();
+                    const minutes = newtime.getMinutes();
+                    const formattedTime = `${timeFormat == '12hNS' ? (hours % 12 || 12) : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+                    est[prayer] = formattedTime;
+                } else {
+                    console.warn(`Time for ${prayer} is undefined.`);
+                    est[prayer] = '-'; // Assign a fallback value
+                }
+            });
+
+            return est;
+        }
+
+        function addMinutes(minutes, date = new Date()) {
+            date.setMinutes(date.getMinutes() + minutes)
+            return date
+        }
+
+
+        // make a table row
+        function makeTableRow(isTitle = true, data, items, eTime, tableBody) {
+            var titleRow = document.createElement('tr');
+            if (isTitle) {
+                var row = document.createElement('tr');
+                for (var i in items) {
+                    var cell = document.createElement('td');
+
+                    cell.innerHTML = data[i];
+                    cell.style.width = '10px';
+
+                    titleRow.appendChild(cell);
+                }
+                tableBody.appendChild(titleRow);
+            }
+            else {
+                for (const i in items) {
+                    var row = document.createElement('tr');
+                    var pcell = document.createElement('td');
+                    var acell = document.createElement('td');
+                    var icell = document.createElement('td');
+                    pcell.innerHTML = items[i];
+                    acell.innerHTML = data[i];
+                    icell.innerHTML = eTime[i];
+                    pcell.style.width = '10px';
+                    acell.style.width = '10px';
+                    icell.style.width = '10px';
+
+                    row.appendChild(icell);
+
+                    row.appendChild(acell);
+                    row.appendChild(pcell);
+
+                    tableBody.appendChild(row);
+
+                }
+            }
+            // row.className = klass;
+        }
+        // remove all children of a node
+        function removeAllChild(node) {
+            if (node == undefined || node == null)
+                return;
+
+            while (node.firstChild)
+                node.removeChild(node.firstChild);
+        }
+
+        // update table
+        // function update() {
+        //     displayMonth();
+        // }
+    </script>
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if a background image is saved in localStorage
+            const savedBackgroundImage = localStorage.getItem('backgroundImage');
+            if (savedBackgroundImage) {
+                document.body.style.backgroundImage = `url(${savedBackgroundImage})`;
+            }
+
+            document.getElementById('imageInput').addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const backgroundImageUrl = e.target.result;
+                        document.body.style.backgroundImage = `url(${backgroundImageUrl})`;
+
+                        // Save the background image URL in localStorage
+                        localStorage.setItem('backgroundImage', backgroundImageUrl);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script> -->
+    <script>
+    </script>
+    <!-- this the old version of module without cache -->
+    <!-- <script type="module">
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, set, get, child , onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoO1sTD7c29cXuf7Ym2EFWFWf4sT-dhGQ",
+            authDomain: "manarahclock.firebaseapp.com",
+            projectId: "manarahclock",
+            storageBucket: "manarahclock.appspot.com",
+            messagingSenderId: "787657770789",
+            appId: "1:787657770789:web:028b6a3eb9cc7a32827ccc"
+        };
+        function requestFullscreen() {
+        const element = document.documentElement; // You can use document.body or any specific element
+
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) { // Firefox
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+            element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) { // IE/Edge
+            element.msRequestFullscreen();
+        }
+        }
+        // activate sound btn
+        document.getElementById('activateSound').addEventListener('click', (event) => {
+            event.target.style.backgroundColor = 'green';
+            event.target.innerText = "تم تفعيل الصوت"
+        });
+        // Function to exit fullscreen
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { // Firefox
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { // IE/Edge
+                document.msExitFullscreen();
+            }
+        }
+        
+        // Function to toggle fullscreen
+        function toggleFullscreen() {
+            if (document.fullscreenElement) {
+                exitFullscreen();
+            } else {
+                requestFullscreen();
+            }
+        }
+
+        // Event listener to toggle fullscreen on double click
+        window.addEventListener('dblclick', () => {
+            toggleFullscreen();
+        });
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // get ref to database services
+        const db = getDatabase(app);
+
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        // Get the parameter value from the URL
+        const parameterValue = getParameterByName('parameter');
+
+        var refRec = ref(db, `users/${parameterValue}`);
+        const adhanAudio = document.getElementById('adhanSound');
+
+        window.addEventListener('click', async () => {
+            // Unmute and play the adhan after user interaction
+            adhanAudio.muted = false;
+        });
+        
+        var gettingDataInterval;
+
+        getData(refRec);
+        
+            
+        gettingDataInterval = setInterval(()=>{
+            console.log("from interval initial")
+            getData(refRec)
+        }, 5000);
+        
+         
+
+        let isInitialLoad = true;
+        let debounceTimeout;
+
+        // Listening for value changes
+        onValue(refRec, (snapshot) => {
+            const data = snapshot.val();
+            console.log("Value changed:", data);
+
+            if (!isInitialLoad) {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    location.reload();
+                }, 5000); // Adjust the debounce delay as needed
+            } else {
+                isInitialLoad = false;
+            }
+        });
+        
+        function getData(ref) {
+            get(ref).then((snapshot) => {
+                let databaseValue = snapshot?.val();
+
+                let lat = databaseValue?.lat;
+                let long = databaseValue?.long;
+
+                document.getElementById("adhanSound").src = databaseValue?.adhan
+
+                let es = filterPrayerNames(databaseValue);
+                let hadeethD = databaseValue.hadeeth.split("-");
+                // console.log(hadeethD.length);
+                
+                
+                showRandomHadeeth(hadeethD, hadeethD.length);
+                // console.log(es);
+
+                document.getElementById('msqName').innerHTML = databaseValue.msqname || "جامع عقبة بن نافع";
+                document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
+
+                displayMonth(lat, long, es,databaseValue.screen);
+                if(databaseValue.backgroundImage !== "noBg" ){
+                    document.getElementById("backgroundHolder").src = databaseValue.backgroundImage
+                }
+                // here when first load i will set the background mobile to the height of the body
+                document.getElementById("backgroundHolderMobile").style.height = document.body.clientHeight+"px"
+                // here chnage style to H if needed
+                if (databaseValue.screen == "H" || databaseValue.screen == "h" ) {
+                    const cssString = `
+                body{
+                    flex-direction: column;
+                    padding: 0;
+                }
+                @media screen and (min-width:420px){
+                    .menu{
+                        width: 100%;
+                        flex-direction: row;
+                        margin: 0;
+                        box-sizing: border-box;
+                        padding: 0;
+                        align-items: center;
+                        padding: 1em 2em 0 2em;
+                        
+                    }
+                    .mainHolder > div {
+                        writing-mode: initial;
+                    }
+                        .menu > img {
+                    width: 60px;
+                }
+                .menu > img {
+                    transform: none;
+                }
+                .menu > div {
+                    transform: none;
+                }
+                .mainHolder{
+                    flex-direction: column;
+                    font-size: 0.7em;
+                }
+                
+                .fa-mosque{
+                    transform: none;
+                }
+                .timetable{
+                    writing-mode: initial;
+                    font-size: .7em;
+                    margin:0 auto;
+                    width:100%;
+                    max-width:400px;
+                }
+                #adLabel{
+                    writing-mode: initial;
+                    padding: .5em 1em;
+                    font-size:1.2em;
+                }
+                display-time{
+                    font-size:1.2em;
+                }
+                .hadeeth{
+                    writing-mode: initial;
+                    font-size: 1em;
+                    padding-left: 1em;
+                    padding-right: 1em;
+                }
+                .drawer{
+                    writing-mode: initial;
+                }
+                
+                .hadithHolder{
+                    flex-direction: column;
+                    align-items: center;
+                    padding-bottom:2em;
+                }
+                body{
+                    width: 100%;
+                    padding: 0;
+                    overflow: auto;
+                }   
+                }
+                
+                `;
+
+                // Create a new style element
+                const styleElement = document.createElement('style');
+                styleElement.type = 'text/css';
+
+                // Add the CSS string to the style element
+                if (styleElement.styleSheet) {
+                // This is for IE
+                styleElement.styleSheet.cssText = cssString;
+                } else {
+                styleElement.appendChild(document.createTextNode(cssString));
+                }
+
+                // Append the style element to the head
+                document.head.appendChild(styleElement);    
+                }
+
+            }).catch((error) => {
+                console.error("Error getting data:", error);
+            });
+
+        }
+
+
+        function showRandomHadeeth(hadeethList, len) {
+            const hadeethDiv = document.getElementById('hadeethDisplay');
+            const randomIndex = Math.floor(Math.random() * len);
+            hadeethDiv.innerText = hadeethList[randomIndex];
+            // hadeethDiv.classList.add('sparkle');
+
+            // setTimeout(() => {
+            //     hadeethDiv.classList.remove('sparkle');
+            // }, 5000);
+
+        }
+
+
+        function filterPrayerNames(obj) {
+            const prayerNames = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha']; // List of prayer names
+            const filteredObject = {};
+
+            Object.keys(obj).forEach(key => {
+                if (prayerNames.includes(key)) {
+                    filteredObject[key] = obj[key];
+                }
+            });
+
+            return filteredObject;
+        }
+
+
+
+        // display monthly timetable
+        function displayMonth(latitude, longtitude, estaDu,screenFromDb) {
+            var lat = latitude;
+            var lng = longtitude;
+            var timeZone = '+3';
+            var dst = 'auto';
+            var method = 'Makkah';
+
+
+
+
+            prayTimes.setMethod(method);
+            makeTable(lat, lng, timeZone, dst, estaDu,screenFromDb);
+
+            // setInterval(displayMonth, 60000);
+        }
+
+        function makeTable(lat, lng, timeZone, dst, establishDur,screenFromDb) {
+
+            var establishDurations = establishDur;
+            // console.log(establishDur);
+
+            var establishTime = {};
+
+            var titles = { iqama: 'الإقامة', athan: 'الأذان', space: '' };
+
+            var items = {
+                fajr: 'الفجر', sunrise: 'الشروق', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء',
+            }
+            // var itemsAthan = {
+            //     isha: 'العشاء', maghrib: 'المغرب', asr: 'العصر', dhuhr: 'الظهر', sunrise: 'الشروق', fajr: 'الفجر', athan: 'وقت الاذان'
+
+            // };
+            // var itemsIqama = {
+            //     isha: 'العشاء', maghrib: 'المغرب', asr: 'العصر', dhuhr: 'الظهر', sunrise: 'الشروق', fajr: 'الفجر', iqama: 'وقت الاقامة'
+
+
+            // };
+
+
+
+            var format = '12hNS';
+
+
+            var today = new Date();
+            var times = filterPrayerNames(prayTimes.getTimes(today, [lat, lng], timeZone, dst, format));
+            // console.log(times);
+            var estTimes = filterPrayerNames(establishTimes(times, establishTime, format, establishDurations));
+            // console.log(estTimes);
+            var tbody = document.createElement('tbody');
+            
+            if ((screenFromDb === "H" || screenFromDb === "h") && window.innerWidth >= 800) {
+                makeTableForH(times, estTimes, tbody, titles, items);
+                prayerSparkle(times, estTimes);
+            } else {
+                makeTableRow(true, titles, titles, estTimes, tbody);
+                const testTimes = {
+                    "fajr": "4:15",
+                    "sunrise": "5:35",
+                    "dhuhr": "2:50",
+                    "asr": "3:21",
+                    "maghrib": "6:09",
+                    "isha": "7:39"
                 }
                 
                 prayerSparkle(testTimes, estTimes);
@@ -1263,34 +1871,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         // function update() {
         //     displayMonth();
         // }
-    </script>
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Check if a background image is saved in localStorage
-            const savedBackgroundImage = localStorage.getItem('backgroundImage');
-            if (savedBackgroundImage) {
-                document.body.style.backgroundImage = `url(${savedBackgroundImage})`;
-            }
-
-            document.getElementById('imageInput').addEventListener('change', function (event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const backgroundImageUrl = e.target.result;
-                        document.body.style.backgroundImage = `url(${backgroundImageUrl})`;
-
-                        // Save the background image URL in localStorage
-                        localStorage.setItem('backgroundImage', backgroundImageUrl);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
     </script> -->
-    <script>
-    </script>
-    
     <script type="text/javascript" src="js/ShowTimeDate-1-0.js"></script>
 
 </body>
