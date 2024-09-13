@@ -1051,16 +1051,16 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 prayerSparkle(times, estTimes);
             } else {
                 makeTableRow(true, titles, titles, estTimes, tbody);
-                const testTimes = {
-                    "fajr": "4:15",
-                    "sunrise": "5:35",
-                    "dhuhr": "1:27",
-                    "asr": "3:34",
-                    "maghrib": "1:30",
-                    "isha": "2:22"
+                // const testTimes = {
+                //     "fajr": "4:15",
+                //     "sunrise": "5:35",
+                //     "dhuhr": "1:27",
+                //     "asr": "3:40",
+                //     "maghrib": "1:30",
+                //     "isha": "2:22"
                 }
                 
-                prayerSparkle(testTimes, estTimes);
+                prayerSparkle(times, estTimes);
                 makeTableRow(false, times, items, estTimes, tbody);
             }
             
