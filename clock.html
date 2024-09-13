@@ -762,7 +762,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 const match = await cache.match(url);
                 if (!match) {
                     // If not cached, fetch the image and cache it
-                    const response = await fetch(url);
+                    const response = await fetch(url, { mode: 'no-cors' });
                     await cache.put(url, response.clone());
                     console.log("Background image cached successfully:", url);
                 } else {
