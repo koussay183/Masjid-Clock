@@ -770,6 +770,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 }
             }
         }
+        
         // this will set the bg image from cash
         async function setCachedBackgroundImage(url) {
             if ('caches' in window) {
@@ -789,22 +790,78 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 }
             }
         }
+        
         // A separate function to handle database value (to avoid duplication)
+        async function cacheAdhanSound(url) {
+            if ('caches' in window) {
+                const cacheName = 'audio-cache';
+                const cache = await caches.open(cacheName);
+
+                // Check if the adhan sound is already cached
+                const match = await cache.match(url);
+                if (!match) {
+                    // If not cached, fetch the adhan mp3 and cache it
+                    const response = await fetch(url, { mode: 'no-cors' });
+                    await cache.put(url, response.clone());
+                    console.log("Adhan sound cached successfully:", url);
+                } else {
+                    console.log("Adhan sound already cached:", url);
+                }
+            }
+        }
+
+        async function getCachedAdhanSound() {
+            const cacheName = 'audio-cache';
+            const cache = await caches.open(cacheName);
+
+            // Check if 'adhan.mp3' is already in the cache
+            const match = await cache.match('adhan.mp3');
+            if (match) {
+                return match.url; // Return cached mp3 file
+            } else {
+                return null; // No cached mp3 file
+            }
+        }
+
+        async function setCachedAdhanSound(url) {
+            const audioElement = document.getElementById("adhanSound");
+
+            // Try to use the cached adhan mp3
+            const cachedAdhan = await getCachedAdhanSound();
+            if (cachedAdhan) {
+                audioElement.src = cachedAdhan;
+                console.log("Using cached adhan sound:", cachedAdhan);
+            } else {
+                // If no cached mp3, set the audio source from the URL
+                audioElement.src = url;
+                console.log("Using live adhan sound:", url);
+            }
+        }
+
         function handleDatabaseValue(databaseValue) {
             let lat = databaseValue?.lat;
             let long = databaseValue?.long;
 
-            document.getElementById("adhanSound").src = databaseValue?.adhan;
+            let adhanUrl = databaseValue?.adhan;
+
+            if (adhanUrl) {
+                cacheAdhanSound(adhanUrl).then(() => {
+                    setCachedAdhanSound(adhanUrl);
+                });
+            } else {
+                setCachedAdhanSound('adhan.mp3'); // Use a default cached file if the URL is missing
+            }
 
             let es = filterPrayerNames(databaseValue);
             let hadeethD = databaseValue.hadeeth.split("-");
-            
+
             showRandomHadeeth(hadeethD, hadeethD.length);
 
             document.getElementById('msqName').innerHTML = databaseValue.msqname || "جامع عقبة بن نافع";
             document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
 
             displayMonth(lat, long, es, databaseValue.screen);
+
             let backgroundImageUrl = databaseValue.backgroundImage;
             if (backgroundImageUrl !== "noBg") {
                 cacheBackgroundImage(backgroundImageUrl).then(() => {
@@ -820,7 +877,6 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 setHorizontalStyles();
             }
         }
-
         function setHorizontalStyles() {
             const cssString = `
             body{
