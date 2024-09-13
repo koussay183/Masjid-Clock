@@ -721,149 +721,188 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         });
         
         function getData(ref) {
-    // Check if we are online or offline
-    if (navigator.onLine) {
-        // Fetch data from Firebase if online
-        get(ref).then((snapshot) => {
-            let databaseValue = snapshot?.val();
-            console.log(databaseValue);
+            // Check if we are online or offline
+            if (navigator.onLine) {
+                // Fetch data from Firebase if online
+                get(ref).then((snapshot) => {
+                    let databaseValue = snapshot?.val();
+                    console.log(databaseValue);
 
-            // Save the fetched data to localStorage
-            localStorage.setItem('databaseValue', JSON.stringify(databaseValue));
+                    // Save the fetched data to localStorage
+                    localStorage.setItem('databaseValue', JSON.stringify(databaseValue));
 
-            // Use the fetched data
-            handleDatabaseValue(databaseValue);
+                    // Use the fetched data
+                    handleDatabaseValue(databaseValue);
 
-        }).catch((error) => {
-            console.error("Error getting data:", error);
-        });
-    } else {
-        // Load data from localStorage if offline
-        let storedData = localStorage.getItem('databaseValue');
-        if (storedData) {
-            let databaseValue = JSON.parse(storedData);
-            console.log('Loaded data from localStorage:', databaseValue);
+                }).catch((error) => {
+                    console.error("Error getting data:", error);
+                });
+            } else {
+                // Load data from localStorage if offline
+                let storedData = localStorage.getItem('databaseValue');
+                if (storedData) {
+                    let databaseValue = JSON.parse(storedData);
+                    console.log('Loaded data from localStorage:', databaseValue);
 
-            // Use the stored data
-            handleDatabaseValue(databaseValue);
-        } else {
-            console.error("No data found in localStorage");
+                    // Use the stored data
+                    handleDatabaseValue(databaseValue);
+                } else {
+                    console.error("No data found in localStorage");
+                }
+            }
         }
-    }
-}
 
-// A separate function to handle database value (to avoid duplication)
-function handleDatabaseValue(databaseValue) {
-    let lat = databaseValue?.lat;
-    let long = databaseValue?.long;
+        // this function willl cashe the image bg
+        async function cacheBackgroundImage(url) {
+            if ('caches' in window) {
+                const cacheName = 'image-cache';
+                const cache = await caches.open(cacheName);
+                
+                // Check if the background image is already cached
+                const match = await cache.match(url);
+                if (!match) {
+                    // If not cached, fetch the image and cache it
+                    const response = await fetch(url);
+                    await cache.put(url, response.clone());
+                    console.log("Background image cached successfully:", url);
+                } else {
+                    console.log("Background image already cached:", url);
+                }
+            }
+        }
+        // this will set the bg image from cash
+        async function setCachedBackgroundImage(url) {
+            if ('caches' in window) {
+                const cacheName = 'image-cache';
+                const cache = await caches.open(cacheName);
 
-    document.getElementById("adhanSound").src = databaseValue?.adhan;
+                const cachedResponse = await cache.match(url);
+                if (cachedResponse) {
+                    const imgBlob = await cachedResponse.blob();
+                    const imgURL = URL.createObjectURL(imgBlob);
+                    document.getElementById("backgroundHolder").src = imgURL;
+                    console.log("Loaded background image from cache:", url);
+                } else {
+                    // If not cached, use the URL directly
+                    document.getElementById("backgroundHolder").src = url;
+                    console.log("Using live background image:", url);
+                }
+            }
+        }
+        // A separate function to handle database value (to avoid duplication)
+        function handleDatabaseValue(databaseValue) {
+            let lat = databaseValue?.lat;
+            let long = databaseValue?.long;
 
-    let es = filterPrayerNames(databaseValue);
-    let hadeethD = databaseValue.hadeeth.split("-");
-    
-    showRandomHadeeth(hadeethD, hadeethD.length);
+            document.getElementById("adhanSound").src = databaseValue?.adhan;
 
-    document.getElementById('msqName').innerHTML = databaseValue.msqname || "جامع عقبة بن نافع";
-    document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
+            let es = filterPrayerNames(databaseValue);
+            let hadeethD = databaseValue.hadeeth.split("-");
+            
+            showRandomHadeeth(hadeethD, hadeethD.length);
 
-    displayMonth(lat, long, es, databaseValue.screen);
+            document.getElementById('msqName').innerHTML = databaseValue.msqname || "جامع عقبة بن نافع";
+            document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
 
-    if (databaseValue.backgroundImage !== "noBg") {
-        document.getElementById("backgroundHolder").src = databaseValue.backgroundImage;
-    }
+            displayMonth(lat, long, es, databaseValue.screen);
 
-    // Set the background height for mobile
-    document.getElementById("backgroundHolderMobile").style.height = document.body.clientHeight + "px";
+            if (backgroundImageUrl !== "noBg") {
+                cacheBackgroundImage(backgroundImageUrl).then(() => {
+                    setCachedBackgroundImage(backgroundImageUrl);
+                });
+            }
 
-    // Change styles for horizontal screens
-    if (databaseValue.screen === "H" || databaseValue.screen === "h") {
-        setHorizontalStyles();
-    }
-}
+            // Set the background height for mobile
+            document.getElementById("backgroundHolderMobile").style.height = document.body.clientHeight + "px";
 
-function setHorizontalStyles() {
-    const cssString = `
-    body{
-        flex-direction: column;
-        padding: 0;
-    }
-    @media screen and (min-width:420px){
-        .menu{
-            width: 100%;
-            flex-direction: row;
-            margin: 0;
-            box-sizing: border-box;
-            padding: 0;
-            align-items: center;
-            padding: 1em 2em 0 2em;
+            // Change styles for horizontal screens
+            if (databaseValue.screen === "H" || databaseValue.screen === "h") {
+                setHorizontalStyles();
+            }
         }
-        .mainHolder > div {
-            writing-mode: initial;
-        }
-        .menu > img {
-            width: 60px;
-        }
-        .menu > img {
-            transform: none;
-        }
-        .menu > div {
-            transform: none;
-        }
-        .mainHolder{
-            flex-direction: column;
-            font-size: 0.7em;
-        }
-        .fa-mosque{
-            transform: none;
-        }
-        .timetable{
-            writing-mode: initial;
-            font-size: .7em;
-            margin:0 auto;
-            width:100%;
-            max-width:400px;
-        }
-        #adLabel{
-            writing-mode: initial;
-            padding: .5em 1em;
-            font-size:1.2em;
-        }
-        display-time{
-            font-size:1.2em;
-        }
-        .hadeeth{
-            writing-mode: initial;
-            font-size: 1em;
-            padding-left: 1em;
-            padding-right: 1em;
-        }
-        .drawer{
-            writing-mode: initial;
-        }
-        .hadithHolder{
-            flex-direction: column;
-            align-items: center;
-            padding-bottom:2em;
-        }
-        body{
-            width: 100%;
-            padding: 0;
-            overflow: auto;
-        }   
-    }
-    `;
-    const styleElement = document.createElement('style');
-    styleElement.type = 'text/css';
 
-    if (styleElement.styleSheet) {
-        styleElement.styleSheet.cssText = cssString; // For IE
-    } else {
-        styleElement.appendChild(document.createTextNode(cssString));
-    }
+        function setHorizontalStyles() {
+            const cssString = `
+            body{
+                flex-direction: column;
+                padding: 0;
+            }
+            @media screen and (min-width:420px){
+                .menu{
+                    width: 100%;
+                    flex-direction: row;
+                    margin: 0;
+                    box-sizing: border-box;
+                    padding: 0;
+                    align-items: center;
+                    padding: 1em 2em 0 2em;
+                }
+                .mainHolder > div {
+                    writing-mode: initial;
+                }
+                .menu > img {
+                    width: 60px;
+                }
+                .menu > img {
+                    transform: none;
+                }
+                .menu > div {
+                    transform: none;
+                }
+                .mainHolder{
+                    flex-direction: column;
+                    font-size: 0.7em;
+                }
+                .fa-mosque{
+                    transform: none;
+                }
+                .timetable{
+                    writing-mode: initial;
+                    font-size: .7em;
+                    margin:0 auto;
+                    width:100%;
+                    max-width:400px;
+                }
+                #adLabel{
+                    writing-mode: initial;
+                    padding: .5em 1em;
+                    font-size:1.2em;
+                }
+                display-time{
+                    font-size:1.2em;
+                }
+                .hadeeth{
+                    writing-mode: initial;
+                    font-size: 1em;
+                    padding-left: 1em;
+                    padding-right: 1em;
+                }
+                .drawer{
+                    writing-mode: initial;
+                }
+                .hadithHolder{
+                    flex-direction: column;
+                    align-items: center;
+                    padding-bottom:2em;
+                }
+                body{
+                    width: 100%;
+                    padding: 0;
+                    overflow: auto;
+                }   
+            }
+            `;
+            const styleElement = document.createElement('style');
+            styleElement.type = 'text/css';
 
-    document.head.appendChild(styleElement);
-}
+            if (styleElement.styleSheet) {
+                styleElement.styleSheet.cssText = cssString; // For IE
+            } else {
+                styleElement.appendChild(document.createTextNode(cssString));
+            }
+
+            document.head.appendChild(styleElement);
+        }
 
         function showRandomHadeeth(hadeethList, len) {
             const hadeethDiv = document.getElementById('hadeethDisplay');
