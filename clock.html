@@ -805,7 +805,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
 
             displayMonth(lat, long, es, databaseValue.screen);
-
+            let backgroundImageUrl = databaseValue.backgroundImage;
             if (backgroundImageUrl !== "noBg") {
                 cacheBackgroundImage(backgroundImageUrl).then(() => {
                     setCachedBackgroundImage(backgroundImageUrl);
