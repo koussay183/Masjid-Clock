@@ -567,7 +567,44 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, set, get, child , onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
+        
+        self.addEventListener('activate', event => {
+            event.waitUntil(
+                caches.keys().then(cacheNames => {
+                return Promise.all(
+                    cacheNames.map(cacheName => {
+                    return caches.delete(cacheName);
+                    })
+                );
+                })
+            );
+        });
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    // Check for updates to the service worker
+                    registration.onupdatefound = () => {
+                    const installingWorker = registration.installing;
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed') {
+                        if (navigator.serviceWorker.controller) {
+                            // New content is available, so force the page to reload
+                            console.log('New content available; refreshing...');
+                            window.location.reload();
+                        }
+                        }
+                    };
+                    };
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+            });
+        }
+        
         // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAoO1sTD7c29cXuf7Ym2EFWFWf4sT-dhGQ",
@@ -577,8 +614,10 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             messagingSenderId: "787657770789",
             appId: "1:787657770789:web:028b6a3eb9cc7a32827ccc"
         };
+       
         function requestFullscreen() {
-        const element = document.documentElement; // You can use document.body or any specific element
+        
+            const element = document.documentElement; // You can use document.body or any specific element
 
         if (element.requestFullscreen) {
             element.requestFullscreen();
@@ -590,11 +629,13 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             element.msRequestFullscreen();
         }
         }
+        
         // activate sound btn
         document.getElementById('activateSound').addEventListener('click', (event) => {
             event.target.style.backgroundColor = 'green';
             event.target.innerText = "تم تفعيل الصوت"
         });
+        
         // Function to exit fullscreen
         function exitFullscreen() {
             if (document.exitFullscreen) {
@@ -621,6 +662,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         window.addEventListener('dblclick', () => {
             toggleFullscreen();
         });
+       
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
 
@@ -679,130 +721,149 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         });
         
         function getData(ref) {
-            get(ref).then((snapshot) => {
-                let databaseValue = snapshot?.val();
+    // Check if we are online or offline
+    if (navigator.onLine) {
+        // Fetch data from Firebase if online
+        get(ref).then((snapshot) => {
+            let databaseValue = snapshot?.val();
+            console.log(databaseValue);
 
-                let lat = databaseValue?.lat;
-                let long = databaseValue?.long;
+            // Save the fetched data to localStorage
+            localStorage.setItem('databaseValue', JSON.stringify(databaseValue));
 
-                document.getElementById("adhanSound").src = databaseValue?.adhan
+            // Use the fetched data
+            handleDatabaseValue(databaseValue);
 
-                let es = filterPrayerNames(databaseValue);
-                let hadeethD = databaseValue.hadeeth.split("-");
-                // console.log(hadeethD.length);
-                
-                
-                showRandomHadeeth(hadeethD, hadeethD.length);
-                // console.log(es);
+        }).catch((error) => {
+            console.error("Error getting data:", error);
+        });
+    } else {
+        // Load data from localStorage if offline
+        let storedData = localStorage.getItem('databaseValue');
+        if (storedData) {
+            let databaseValue = JSON.parse(storedData);
+            console.log('Loaded data from localStorage:', databaseValue);
 
-                document.getElementById('msqName').innerHTML = databaseValue.msqname || "جامع عقبة بن نافع";
-                document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
-
-                displayMonth(lat, long, es,databaseValue.screen);
-                if(databaseValue.backgroundImage !== "noBg" ){
-                    document.getElementById("backgroundHolder").src = databaseValue.backgroundImage
-                }
-                // here when first load i will set the background mobile to the height of the body
-                document.getElementById("backgroundHolderMobile").style.height = document.body.clientHeight+"px"
-                // here chnage style to H if needed
-                if (databaseValue.screen == "H" || databaseValue.screen == "h" ) {
-                    const cssString = `
-                body{
-                    flex-direction: column;
-                    padding: 0;
-                }
-                @media screen and (min-width:420px){
-                    .menu{
-                        width: 100%;
-                        flex-direction: row;
-                        margin: 0;
-                        box-sizing: border-box;
-                        padding: 0;
-                        align-items: center;
-                        padding: 1em 2em 0 2em;
-                        
-                    }
-                    .mainHolder > div {
-                        writing-mode: initial;
-                    }
-                        .menu > img {
-                    width: 60px;
-                }
-                .menu > img {
-                    transform: none;
-                }
-                .menu > div {
-                    transform: none;
-                }
-                .mainHolder{
-                    flex-direction: column;
-                    font-size: 0.7em;
-                }
-                
-                .fa-mosque{
-                    transform: none;
-                }
-                .timetable{
-                    writing-mode: initial;
-                    font-size: .7em;
-                    margin:0 auto;
-                    width:100%;
-                    max-width:400px;
-                }
-                #adLabel{
-                    writing-mode: initial;
-                    padding: .5em 1em;
-                    font-size:1.2em;
-                }
-                display-time{
-                    font-size:1.2em;
-                }
-                .hadeeth{
-                    writing-mode: initial;
-                    font-size: 1em;
-                    padding-left: 1em;
-                    padding-right: 1em;
-                }
-                .drawer{
-                    writing-mode: initial;
-                }
-                
-                .hadithHolder{
-                    flex-direction: column;
-                    align-items: center;
-                    padding-bottom:2em;
-                }
-                body{
-                    width: 100%;
-                    padding: 0;
-                    overflow: auto;
-                }   
-                }
-                
-                `;
-
-                // Create a new style element
-                const styleElement = document.createElement('style');
-                styleElement.type = 'text/css';
-
-                // Add the CSS string to the style element
-                if (styleElement.styleSheet) {
-                // This is for IE
-                styleElement.styleSheet.cssText = cssString;
-                } else {
-                styleElement.appendChild(document.createTextNode(cssString));
-                }
-
-                // Append the style element to the head
-                document.head.appendChild(styleElement);    
-                }
-
-            }).catch((error) => {
-                console.error("Error getting data:", error);
-            });
-
+            // Use the stored data
+            handleDatabaseValue(databaseValue);
+        } else {
+            console.error("No data found in localStorage");
         }
+    }
+}
 
+// A separate function to handle database value (to avoid duplication)
+function handleDatabaseValue(databaseValue) {
+    let lat = databaseValue?.lat;
+    let long = databaseValue?.long;
+
+    document.getElementById("adhanSound").src = databaseValue?.adhan;
+
+    let es = filterPrayerNames(databaseValue);
+    let hadeethD = databaseValue.hadeeth.split("-");
+    
+    showRandomHadeeth(hadeethD, hadeethD.length);
+
+    document.getElementById('msqName').innerHTML = databaseValue.msqname || "جامع عقبة بن نافع";
+    document.getElementById('adLabel').innerHTML = databaseValue.advertisement;
+
+    displayMonth(lat, long, es, databaseValue.screen);
+
+    if (databaseValue.backgroundImage !== "noBg") {
+        document.getElementById("backgroundHolder").src = databaseValue.backgroundImage;
+    }
+
+    // Set the background height for mobile
+    document.getElementById("backgroundHolderMobile").style.height = document.body.clientHeight + "px";
+
+    // Change styles for horizontal screens
+    if (databaseValue.screen === "H" || databaseValue.screen === "h") {
+        setHorizontalStyles();
+    }
+}
+
+function setHorizontalStyles() {
+    const cssString = `
+    body{
+        flex-direction: column;
+        padding: 0;
+    }
+    @media screen and (min-width:420px){
+        .menu{
+            width: 100%;
+            flex-direction: row;
+            margin: 0;
+            box-sizing: border-box;
+            padding: 0;
+            align-items: center;
+            padding: 1em 2em 0 2em;
+        }
+        .mainHolder > div {
+            writing-mode: initial;
+        }
+        .menu > img {
+            width: 60px;
+        }
+        .menu > img {
+            transform: none;
+        }
+        .menu > div {
+            transform: none;
+        }
+        .mainHolder{
+            flex-direction: column;
+            font-size: 0.7em;
+        }
+        .fa-mosque{
+            transform: none;
+        }
+        .timetable{
+            writing-mode: initial;
+            font-size: .7em;
+            margin:0 auto;
+            width:100%;
+            max-width:400px;
+        }
+        #adLabel{
+            writing-mode: initial;
+            padding: .5em 1em;
+            font-size:1.2em;
+        }
+        display-time{
+            font-size:1.2em;
+        }
+        .hadeeth{
+            writing-mode: initial;
+            font-size: 1em;
+            padding-left: 1em;
+            padding-right: 1em;
+        }
+        .drawer{
+            writing-mode: initial;
+        }
+        .hadithHolder{
+            flex-direction: column;
+            align-items: center;
+            padding-bottom:2em;
+        }
+        body{
+            width: 100%;
+            padding: 0;
+            overflow: auto;
+        }   
+    }
+    `;
+    const styleElement = document.createElement('style');
+    styleElement.type = 'text/css';
+
+    if (styleElement.styleSheet) {
+        styleElement.styleSheet.cssText = cssString; // For IE
+    } else {
+        styleElement.appendChild(document.createTextNode(cssString));
+    }
+
+    document.head.appendChild(styleElement);
+}
 
         function showRandomHadeeth(hadeethList, len) {
             const hadeethDiv = document.getElementById('hadeethDisplay');
