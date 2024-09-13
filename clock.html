@@ -877,6 +877,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 setHorizontalStyles();
             }
         }
+        
         function setHorizontalStyles() {
             const cssString = `
             body{
@@ -1044,16 +1045,16 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 prayerSparkle(times, estTimes);
             } else {
                 makeTableRow(true, titles, titles, estTimes, tbody);
-                // const testTimes = {
-                //     "fajr": "4:15",
-                //     "sunrise": "5:35",
-                //     "dhuhr": "6:23",
-                //     "asr": "3:21",
-                //     "maghrib": "6:09",
-                //     "isha": "7:39"
-                // }
+                const testTimes = {
+                    "fajr": "4:15",
+                    "sunrise": "5:35",
+                    "dhuhr": "1:18",
+                    "asr": "3:21",
+                    "maghrib": "6:09",
+                    "isha": "7:39"
+                }
                 
-                prayerSparkle(times, estTimes);
+                prayerSparkle(testTimes, estTimes);
                 makeTableRow(false, times, items, estTimes, tbody);
             }
             
