@@ -591,13 +591,13 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                         if (installingWorker.state === 'installed') {
                         if (navigator.serviceWorker.controller) {
                             // New content is available, so force the page to reload
-                            console.log('New content available; refreshing...');
+                            // console.log('New content available; refreshing...');
                             window.location.reload();
                         }
                         }
                     };
                     };
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    // console.log('ServiceWorker registration successful with scope: ', registration.scope);
                 })
                 .catch(error => {
                     console.log('ServiceWorker registration failed: ', error);
@@ -699,7 +699,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         
             
         gettingDataInterval = setInterval(()=>{
-            console.log("from interval initial")
+            // console.log("from interval initial")
             getData(refRec)
         }, 5000);
         
@@ -711,7 +711,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
         // Listening for value changes
         onValue(refRec, (snapshot) => {
             const data = snapshot.val();
-            console.log("Value changed:", data);
+            // console.log("Value changed:", data);
 
             if (!isInitialLoad) {
                 clearTimeout(debounceTimeout);
@@ -729,7 +729,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 // Fetch data from Firebase if online
                 get(ref).then((snapshot) => {
                     let databaseValue = snapshot?.val();
-                    console.log(databaseValue);
+                    // console.log(databaseValue);
 
                     // Save the fetched data to localStorage
                     localStorage.setItem('databaseValue', JSON.stringify(databaseValue));
@@ -745,7 +745,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 let storedData = localStorage.getItem('databaseValue');
                 if (storedData) {
                     let databaseValue = JSON.parse(storedData);
-                    console.log('Loaded data from localStorage:', databaseValue);
+                    // console.log('Loaded data from localStorage:', databaseValue);
 
                     // Use the stored data
                     handleDatabaseValue(databaseValue);
@@ -760,20 +760,28 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             if ('caches' in window) {
                 const cacheName = 'image-cache';
                 const cache = await caches.open(cacheName);
-                
+
                 // Check if the background image is already cached
                 const match = await cache.match(url);
                 if (!match) {
-                    // If not cached, fetch the image and cache it
-                    const response = await fetch(url, { mode: 'no-cors' });
-                    await cache.put(url, response.clone());
-                    console.log("Background image cached successfully:", url);
+                    try {
+                        // Fetch the image and cache it
+                        const response = await fetch(url, { mode: 'cors' });
+                        
+                        if (response.ok) {
+                            await cache.put(url, response.clone());
+                            console.log("Background image cached successfully:", url);
+                        } else {
+                            console.log("Failed to fetch image:", response.status);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching and caching image:", error);
+                    }
                 } else {
                     console.log("Background image already cached:", url);
                 }
             }
         }
-        
         // this will set the bg image from cash
         async function setCachedBackgroundImage(url) {
             if ('caches' in window) {
@@ -781,16 +789,25 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 const cache = await caches.open(cacheName);
 
                 const cachedResponse = await cache.match(url);
+
                 if (cachedResponse) {
                     const imgBlob = await cachedResponse.blob();
-                    const imgURL = URL.createObjectURL(imgBlob);
-                    document.getElementById("backgroundHolder").src = imgURL;
-                    console.log("Loaded background image from cache:", url);
+                    
+                    if (imgBlob.size > 0) { // Check if the blob contains any data
+                        const imgURL = URL.createObjectURL(imgBlob);
+                        document.getElementById("backgroundHolder").src = imgURL;
+                        console.log("Loaded background image from cache:", url);
+                    } else {
+                        console.log("Cached response has no image data, using live image.");
+                        document.getElementById("backgroundHolder").src = url;
+                    }
                 } else {
-                    // If not cached, use the URL directly
+                    console.log("No cached image found, using live image.");
                     document.getElementById("backgroundHolder").src = url;
-                    console.log("Using live background image:", url);
                 }
+            }else {
+                document.getElementById("backgroundHolder").src = url;
+                console.log("Cache is not supported, using live image.");
             }
         }
         
@@ -806,9 +823,9 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                     // If not cached, fetch the adhan mp3 and cache it
                     const response = await fetch(url, { mode: 'no-cors' });
                     await cache.put(url, response.clone());
-                    console.log("Adhan sound cached successfully:", url);
+                    // console.log("Adhan sound cached successfully:", url);
                 } else {
-                    console.log("Adhan sound already cached:", url);
+                    // console.log("Adhan sound already cached:", url);
                 }
             }
         }
@@ -833,11 +850,11 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
             const cachedAdhan = await getCachedAdhanSound();
             if (cachedAdhan) {
                 audioElement.src = cachedAdhan;
-                console.log("Using cached adhan sound:", cachedAdhan);
+                // console.log("Using cached adhan sound:", cachedAdhan);
             } else {
                 // If no cached mp3, set the audio source from the URL
                 audioElement.src = url;
-                console.log("Using live adhan sound:", url);
+                // console.log("Using live adhan sound:", url);
             }
         }
 
@@ -1171,7 +1188,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 
                 if (prayerTimes.hasOwnProperty(prayer)) {
                     
-                    console.log(pTimes[prayer] ,pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') , currentTime.replace("PM",'').replace("AM",'').replace(" ",''),"checking");
+                    // console.log(pTimes[prayer] ,pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') , currentTime.replace("PM",'').replace("AM",'').replace(" ",''),"checking");
                     
                     if (pTimes[prayer] === currentTime.replace("PM",'').replace("AM",'').replace(" ",'') ) {
                         // Clear any existing interval
@@ -1198,7 +1215,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
 
                             // Restart the interval
                             gettingDataInterval = setInterval(() => {
-                                console.log("from interval second");
+                                // console.log("from interval second");
                                 getData(refRec);
                             }, 5000);
 
