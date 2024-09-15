@@ -766,7 +766,7 @@ background: linear-gradient(45deg, rgba(17,56,47,1) 0%, rgba(34,110,91,1) 49%, r
                 if (!match) {
                     try {
                         // Fetch the image and cache it
-                        const response = await fetch(url, { mode: 'cors' });
+                        const response = await fetch(url, { mode: 'no-cors' });
                         
                         if (response.ok) {
                             await cache.put(url, response.clone());
