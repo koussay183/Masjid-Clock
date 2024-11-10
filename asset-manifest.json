@@ -1,17 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.700290ee.css",
-    "main.js": "/static/js/main.787a3c37.js",
+    "main.css": "/static/css/main.a93b1ef5.css",
+    "main.js": "/static/js/main.0fdd3fdb.js",
     "static/media/mobile.jpg": "/static/media/mobile.afe45ec3d1478a0fb03b.jpg",
+    "static/media/Screenshot 2024-11-10 165925.png": "/static/media/Screenshot 2024-11-10 165925.8bd84b6d8d968f7a78c8.png",
+    "static/media/screencapture-manarah-clock-netlify-app-masjid-test-2024-11-10-12_01_20.png": "/static/media/screencapture-manarah-clock-netlify-app-masjid-test-2024-11-10-12_01_20.6c74f9b1cb8bf0d0f2a8.png",
     "static/media/logo2.png": "/static/media/logo2.e855a34d75e42c1f1246.png",
     "service-worker.js": "/service-worker.js",
     "static/media/click.mp3": "/static/media/click.c758a8ad727a02150bc2.mp3",
     "index.html": "/index.html",
-    "main.700290ee.css.map": "/static/css/main.700290ee.css.map",
-    "main.787a3c37.js.map": "/static/js/main.787a3c37.js.map"
+    "main.a93b1ef5.css.map": "/static/css/main.a93b1ef5.css.map",
+    "main.0fdd3fdb.js.map": "/static/js/main.0fdd3fdb.js.map"
   },
   "entrypoints": [
-    "static/css/main.700290ee.css",
-    "static/js/main.787a3c37.js"
+    "static/css/main.a93b1ef5.css",
+    "static/js/main.0fdd3fdb.js"
   ]
 }
