@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/static/css/main.82e85c60.css",
-    "main.js": "/static/js/main.b4392819.js",
+    "main.js": "/static/js/main.b55c1f8a.js",
     "static/media/mobile.jpg": "/static/media/mobile.afe45ec3d1478a0fb03b.jpg",
     "static/media/Screenshot 2024-11-10 165925.png": "/static/media/Screenshot 2024-11-10 165925.8bd84b6d8d968f7a78c8.png",
     "static/media/duaV.jpg": "/static/media/duaV.e3e17388230c04e5bf17.jpg",
     "static/media/duaMobile.jpg": "/static/media/duaMobile.9591f87ac94237c2f679.jpg",
-    "static/media/duaH.jpg": "/static/media/duaH.2a8e7da4f69425911048.jpg",
+    "static/media/duaH.jpg": "/static/media/duaH.e00b3a54f2953f77fec1.jpg",
     "static/media/screencapture-manarah-clock-netlify-app-masjid-test-2024-11-10-12_01_20.png": "/static/media/screencapture-manarah-clock-netlify-app-masjid-test-2024-11-10-12_01_20.6c74f9b1cb8bf0d0f2a8.png",
     "static/media/logo2.png": "/static/media/logo2.e855a34d75e42c1f1246.png",
     "service-worker.js": "/service-worker.js",
     "static/media/click.mp3": "/static/media/click.c758a8ad727a02150bc2.mp3",
     "index.html": "/index.html",
     "main.82e85c60.css.map": "/static/css/main.82e85c60.css.map",
-    "main.b4392819.js.map": "/static/js/main.b4392819.js.map"
+    "main.b55c1f8a.js.map": "/static/js/main.b55c1f8a.js.map"
   },
   "entrypoints": [
     "static/css/main.82e85c60.css",
-    "static/js/main.b4392819.js"
+    "static/js/main.b55c1f8a.js"
   ]
 }
