@@ -10,16 +10,43 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable" 
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
+  "scope": "/", 
   "display": "standalone",
+  "orientation": "landscape", 
   "theme_color": "#0d182b",
-  "background_color": "#0d182b"
+  "background_color": "#0d182b",
+  "splash_screen_color": "#0d182b", 
+  "offline_enabled": true, 
+  "prefer_related_applications": false, 
+  "categories": ["utilities", "productivity"], 
+  "description": "Digital prayer times display system for mosques", 
+  "screenshots": [ 
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "protocol_handlers": [ 
+    {
+      "protocol": "web+manarah",
+      "url": "/?masjid=%s"
+    }
+  ],
+  "serviceworker": { 
+    "src": "./service-worker.js",
+    "scope": "/",
+    "type": ""
+  }
 }
